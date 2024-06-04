@@ -225,7 +225,7 @@ public class AuthController {
         HttpServletResponse response = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getResponse();
         response.addCookie(jwtCookie);
 
-        response.sendRedirect("http://localhost:3002/home");
+        response.sendRedirect("http://localhost:3000/home");
     }
 
     private Map<String, String> buildAccessTokenRequest(String code) {
