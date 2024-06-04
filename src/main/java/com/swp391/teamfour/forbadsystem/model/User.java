@@ -33,10 +33,12 @@ public class User {
     private String profileAvatar;
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "roleId", nullable = false)
+    @JoinColumn(name = "roleId")
     private Role role;
 
-    @OneToOne(cascade = CascadeType.ALL, optional = true)
+    @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "managerId", referencedColumnName = "userId")
     private User manager;
+
+
 }

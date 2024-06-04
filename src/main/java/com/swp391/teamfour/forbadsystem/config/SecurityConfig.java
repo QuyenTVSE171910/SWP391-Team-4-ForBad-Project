@@ -53,7 +53,8 @@ public class SecurityConfig {
                         .requestMatchers("/forbad/test/**").permitAll()
                         .anyRequest().authenticated()
                 )
-                .addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
+                .oauth2Login();
         return http.build();
     }
 }

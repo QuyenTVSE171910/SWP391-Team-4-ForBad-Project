@@ -4,7 +4,8 @@ public enum RoleEnum {
     ROLE_ADMIN("admin"),
     ROLE_MANAGER("manager"),
     ROLE_CUSTOMER("customer"),
-    ROLE_STAFF("staff");
+    ROLE_STAFF("staff"),
+    ROLE_TEMP("temp");
 
     private final String role;
 

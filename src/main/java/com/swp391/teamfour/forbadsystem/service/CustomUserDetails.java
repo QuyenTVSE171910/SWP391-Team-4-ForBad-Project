@@ -2,6 +2,7 @@ package com.swp391.teamfour.forbadsystem.service;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.swp391.teamfour.forbadsystem.model.Role;
+import com.swp391.teamfour.forbadsystem.model.RoleEnum;
 import com.swp391.teamfour.forbadsystem.model.User;
 import jakarta.persistence.Column;
 import lombok.AllArgsConstructor;
@@ -28,7 +29,7 @@ public class CustomUserDetails implements UserDetails {
     private Long managerId;
 
     public static CustomUserDetails build(User user) {
-        GrantedAuthority authority = new SimpleGrantedAuthority(user.getRole().getRoleName());
+        GrantedAuthority authority = (user.getRole() != null) ? new SimpleGrantedAuthority(user.getRole().getRoleName()) : new SimpleGrantedAuthority(RoleEnum.ROLE_TEMP.getRole());
         Long managerId = (user.getManager() != null) ? user.getManager().getUserId() : null;
 
         return new CustomUserDetails(
@@ -54,7 +55,7 @@ public class CustomUserDetails implements UserDetails {
 
     @Override
     public String getUsername() {
-        return phoneNumber;
+        return email;
     }
 
     @Override

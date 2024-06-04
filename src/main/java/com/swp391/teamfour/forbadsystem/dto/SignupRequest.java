@@ -32,8 +32,5 @@ public class SignupRequest {
 
     private String profileAvatar;
 
-    @NotEmpty(message = "Role must not be empty.")
-    private List<String> roles;
-
     private Long managerId;
 }
