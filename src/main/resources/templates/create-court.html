@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="https://www.thymeleaf.org/">
+<head>
+    <meta charset="UTF-8">
+    <title>Danh sách cơ sở</title>
+</head>
+<body>
+<main>
+    <section>
+        <div class="container">
+        <form role="form" method="post" th:action="@{/courts/create-court}" th:object="${court}">
+            <div class="container">
+                <div>
+                    <div>
+                        <label for="inputCourtName">Tên Cơ sở</label>
+                        <input type="text" class="form-control"
+                               id="inputCourtName"
+                               placeholder="Tên cơ sở"
+                               name="CourtName"
+                               th:field="*{court_name}"
+                        >
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label for="inputAddress">Địa chỉ</label>
+                        <input type="text"
+                               id="inputAddress"
+                               placeholder="Địa chỉ"
+                               name="address"
+                               th:field="*{address}"
+                        >
+                    </div>
+                    <div class="form-group">
+                        <label for="inputOpentime">Giờ mở cửa</label>
+                        <input type="datetime-local"
+                               id="inputOpentime"
+                               placeholder="Giờ mở cửa"
+                               name="open_time"
+                               th:field="*{open_time}"
+                        >
+                    </div>
+                    <div class="form-group">
+                        <label for="inputClosetime">Giờ đóng cửa</label>
+                        <input type="datetime-local"
+                               id="inputClosetime"
+                               placeholder="Giờ đóng cửa"
+                               name="close_time"
+                               th:field="*{close_time}"
+                        >
+                    </div>
+                </div>
+                <button type="submit">Gửi</button>
+            </div>
+        </form>
+        </div>
+    </section>
+</main>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="js/scripts.js"></script>
+</body>
+</html>
