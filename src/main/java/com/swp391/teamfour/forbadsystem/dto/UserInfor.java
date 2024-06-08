@@ -1,10 +1,6 @@
 package com.swp391.teamfour.forbadsystem.dto;
 
-import com.swp391.teamfour.forbadsystem.model.Role;
-import jakarta.persistence.Column;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import com.swp391.teamfour.forbadsystem.service.serviceimp.CustomUserDetails;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
@@ -18,4 +14,9 @@ public class UserInfor {
     private String profileAvatar;
     private String role;
     private Long managerId;
+
+    public static UserInfor build(CustomUserDetails userDetails) {
+        return new UserInfor(userDetails.getUserId(), userDetails.getEmail(), userDetails.getPhoneNumber(),
+                userDetails.getFullName(), userDetails.getProfileAvatar(), userDetails.getRole().toString(), userDetails.getManagerId());
+    }
 }

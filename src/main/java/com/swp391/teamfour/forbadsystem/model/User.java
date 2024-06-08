@@ -9,35 +9,36 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "userAccount", uniqueConstraints = {@UniqueConstraint(columnNames = "email"),
-                                           @UniqueConstraint(columnNames = "phoneNumber")})
+@Table(name = "user_account", uniqueConstraints = {@UniqueConstraint(columnNames = "email"),
+                                           @UniqueConstraint(columnNames = "phone_number")})
 public class User {
 
-    @Id
+    @Id()
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "user_id")
     private Long userId;
 
     @Column(length = 100, nullable = false)
     private String email;
 
-    @Column(length = 13)
+    @Column(length = 13, name = "phone_number")
     private String phoneNumber;
 
-    @Column(length = 120, nullable = false)
+    @Column(length = 120, name = "password_hash", nullable = false)
     private String passwordHash;
 
-    @Column(length = 100, nullable = false)
+    @Column(length = 100, name = "full_name", nullable = false)
     private String fullName;
 
-    @Column(length = 255)
+    @Column(length = 255, name = "profile_avatar")
     private String profileAvatar;
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "roleId")
+    @JoinColumn(name = "role_id")
     private Role role;
 
     @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "managerId", referencedColumnName = "userId")
+    @JoinColumn(name = "manager_id", referencedColumnName = "user_id")
     private User manager;
 
 

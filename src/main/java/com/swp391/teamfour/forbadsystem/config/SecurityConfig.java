@@ -2,6 +2,7 @@ package com.swp391.teamfour.forbadsystem.config;
 
 import com.swp391.teamfour.forbadsystem.jwt.JwtAuthenticationFilter;
 import com.swp391.teamfour.forbadsystem.service.UserService;
+import com.swp391.teamfour.forbadsystem.service.serviceimp.UserServiceImp;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -15,6 +16,9 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.web.filter.CorsFilter;
 
 @Configuration
 @EnableWebSecurity
@@ -22,18 +26,22 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class SecurityConfig {
 
     @Autowired
-    private UserService userDetailsService;
+    public UserService userService;
 
     @Bean
-    public PasswordEncoder passwordEncoder() {return new BCryptPasswordEncoder();}
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
 
     @Bean
-    public JwtAuthenticationFilter jwtAuthenticationFilter() {return new JwtAuthenticationFilter();}
+    public JwtAuthenticationFilter jwtAuthenticationFilter() {
+        return new JwtAuthenticationFilter();
+    }
 
     @Bean
     public DaoAuthenticationProvider authProvider() {
         DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
-        authProvider.setUserDetailsService(userDetailsService);
+        authProvider.setUserDetailsService(userService);
         authProvider.setPasswordEncoder(passwordEncoder());
         return authProvider;
     }
@@ -48,13 +56,29 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                .csrf().disable()
+                .cors().and()
                 .authorizeHttpRequests(authorize -> authorize.requestMatchers("/forbad/auth/**").permitAll()
-                        .requestMatchers("/forbad/test/**").permitAll()
+                        .requestMatchers("/forbad/forgot-password/**").permitAll()
                         .anyRequest().authenticated()
                 )
+                .csrf().disable()
                 .addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
                 .oauth2Login();
         return http.build();
     }
+
+    @Bean
+    public CorsFilter corsFilter() {
+        CorsConfiguration config = new CorsConfiguration();
+        config.addAllowedOrigin("*"); // Cho phép truy cập từ tất cả các origin
+        config.addAllowedHeader("*"); // Cho phép truy cập tất cả các header
+        config.addAllowedMethod("*"); // Cho phép truy cập tất cả các phương thức HTTP (GET, POST, PUT, DELETE, v.v.)
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", config);
+
+        return new CorsFilter(source);
+    }
+
+
 }

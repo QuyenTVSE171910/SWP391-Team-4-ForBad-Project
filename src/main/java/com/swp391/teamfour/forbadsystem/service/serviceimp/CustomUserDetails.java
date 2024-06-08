@@ -1,10 +1,8 @@
-package com.swp391.teamfour.forbadsystem.service;
+package com.swp391.teamfour.forbadsystem.service.serviceimp;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.swp391.teamfour.forbadsystem.model.Role;
 import com.swp391.teamfour.forbadsystem.model.RoleEnum;
 import com.swp391.teamfour.forbadsystem.model.User;
-import jakarta.persistence.Column;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import org.springframework.security.core.GrantedAuthority;

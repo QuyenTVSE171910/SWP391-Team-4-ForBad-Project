@@ -1,9 +1,11 @@
 package com.swp391.teamfour.forbadsystem.jwt;
 
-import com.swp391.teamfour.forbadsystem.service.CustomUserDetails;
+import com.swp391.teamfour.forbadsystem.repository.UserRepository;
+import com.swp391.teamfour.forbadsystem.service.serviceimp.CustomUserDetails;
 import io.jsonwebtoken.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -18,6 +20,9 @@ public class JwtTokenProvider {
 
     @Value("${jwt.app.jwtExpirationsMs}")
     private int jwtExpirationMs;
+
+    @Autowired
+    private UserRepository userRepository;
 
     public String generateJwtToken(CustomUserDetails userDetails) {
         return Jwts.builder()
@@ -44,6 +49,9 @@ public class JwtTokenProvider {
         Claims claims = getClaimsFromJwtToken(token);
 
         if (claims != null && !isTokenExpired(claims)) {
+            if (!userRepository.existsByEmail(claims.getSubject())) {
+                throw new RuntimeException("Invalid JWT Token !");
+            }
             return claims.getSubject();
         }
         return null;
@@ -66,4 +74,5 @@ public class JwtTokenProvider {
         }
         return false;
     }
+
 }
