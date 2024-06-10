@@ -14,12 +14,11 @@ import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
-@RequestMapping("/forbad/auth")
+@RequestMapping("/auth")
 public class AuthController {
     @Autowired
     private AuthService authService;
@@ -73,9 +72,9 @@ public class AuthController {
     }
 
     @PostMapping("/authenticate")
-    public ResponseEntity<?> getJwtToken(@RequestBody UserInfor userInfor) {
+    public ResponseEntity<?> getJwtToken(@RequestBody RoleSelectionRequest roleSelectionRequest) {
 
-        JwtResponse jwtResponse = authService.getJwtToken(userInfor);
+        JwtResponse jwtResponse = authService.getJwtToken(roleSelectionRequest);
         return ResponseEntity.ok(jwtResponse);
     }
 

@@ -1,7 +1,6 @@
 package com.swp391.teamfour.forbadsystem.service.serviceimp;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.swp391.teamfour.forbadsystem.model.RoleEnum;
 import com.swp391.teamfour.forbadsystem.model.User;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -16,7 +15,7 @@ import java.util.Collections;
 @AllArgsConstructor
 public class CustomUserDetails implements UserDetails {
 
-    private Long userId;
+    private String userId;
     private String email;
     private String phoneNumber;
     @JsonIgnore
@@ -24,11 +23,11 @@ public class CustomUserDetails implements UserDetails {
     private String fullName;
     private String profileAvatar;
     private GrantedAuthority role;
-    private Long managerId;
+    private String managerId;
 
     public static CustomUserDetails build(User user) {
-        GrantedAuthority authority = (user.getRole() != null) ? new SimpleGrantedAuthority(user.getRole().getRoleName()) : new SimpleGrantedAuthority(RoleEnum.ROLE_TEMP.getRole());
-        Long managerId = (user.getManager() != null) ? user.getManager().getUserId() : null;
+        GrantedAuthority authority = (user.getRole() != null) ? new SimpleGrantedAuthority(user.getRole().getRoleName()) : new SimpleGrantedAuthority("temp");
+        String managerId = (user.getManager() != null) ? user.getManager().getUserId() : null;
 
         return new CustomUserDetails(
                 user.getUserId(),

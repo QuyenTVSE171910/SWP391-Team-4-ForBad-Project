@@ -34,11 +34,11 @@ public class ForgotPasswordServiceImp implements ForgotPasswordService {
     }
 
     @Override
-    public PasswordResetToken validPasswordResetToken(String token) {
+    public String validPasswordResetToken(String token) {
         PasswordResetToken passwordResetToken = passwordResetTokenRepository.findByToken(token);
         if (passwordResetToken == null || passwordResetToken.getExpiryDate().isBefore(LocalDateTime.now())) {
             return null;
         }
-        return passwordResetToken;
+        return passwordResetToken.getUser().getUserId();
     }
 }

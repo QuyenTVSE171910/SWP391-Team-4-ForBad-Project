@@ -7,13 +7,13 @@ import lombok.Data;
 @Data
 @AllArgsConstructor
 public class UserInfor {
-    private Long userId;
+    private String userId;
     private String email;
     private String phoneNumber;
     private String fullName;
     private String profileAvatar;
     private String role;
-    private Long managerId;
+    private String managerId;
 
     public static UserInfor build(CustomUserDetails userDetails) {
         return new UserInfor(userDetails.getUserId(), userDetails.getEmail(), userDetails.getPhoneNumber(),

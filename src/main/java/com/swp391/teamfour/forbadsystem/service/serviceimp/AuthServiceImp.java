@@ -1,15 +1,13 @@
 package com.swp391.teamfour.forbadsystem.service.serviceimp;
 
-import com.swp391.teamfour.forbadsystem.dto.JwtResponse;
-import com.swp391.teamfour.forbadsystem.dto.SigninRequest;
-import com.swp391.teamfour.forbadsystem.dto.SignupRequest;
-import com.swp391.teamfour.forbadsystem.dto.UserInfor;
+import com.swp391.teamfour.forbadsystem.dto.*;
 import com.swp391.teamfour.forbadsystem.jwt.JwtTokenProvider;
 import com.swp391.teamfour.forbadsystem.model.Role;
 import com.swp391.teamfour.forbadsystem.model.User;
 import com.swp391.teamfour.forbadsystem.repository.RoleRepository;
 import com.swp391.teamfour.forbadsystem.repository.UserRepository;
 import com.swp391.teamfour.forbadsystem.service.AuthService;
+import com.swp391.teamfour.forbadsystem.service.IdGenerator;
 import com.swp391.teamfour.forbadsystem.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -19,7 +17,6 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -42,6 +39,9 @@ public class AuthServiceImp implements AuthService {
 
     @Autowired
     private JwtTokenProvider jwtTokenProvider;
+
+    @Autowired
+    private IdGenerator idGenerator;
 
     @Autowired
     RestTemplate restTemplate;
@@ -90,26 +90,32 @@ public class AuthServiceImp implements AuthService {
     }
 
     @Override
-    public JwtResponse getJwtToken(UserInfor userInfor) {
-        User existingUser = userRepository.findByEmail(userInfor.getEmail())
-                .orElseThrow(() -> new RuntimeException("Error: User not found."));
+    public JwtResponse getJwtToken(RoleSelectionRequest roleSelectionRequest) {
+        try {
+            User existingUser = userRepository.findById(roleSelectionRequest.getUserId())
+                    .orElseThrow(() -> new RuntimeException("Error: User not found."));
 
-        Role role = roleRepository.findByRoleName(userInfor.getRole())
-                .orElseThrow(() -> new RuntimeException("Error: Role not found."));
+            if (roleSelectionRequest.getRole() != null) {
+                Role role = roleRepository.findByRoleName(roleSelectionRequest.getRole())
+                        .orElseThrow(() -> new RuntimeException("Error: Role not found."));
+                existingUser.setRole(role);
+            }
 
-        existingUser.setRole(role);
+            userRepository.save(existingUser);
 
-        userRepository.save(existingUser);
+            CustomUserDetails userDetails = CustomUserDetails.build(existingUser);
 
-        CustomUserDetails userDetails = CustomUserDetails.build(existingUser);
-
-        return new JwtResponse(jwtTokenProvider.generateJwtToken(userDetails), expirationTime);
+            return new JwtResponse(jwtTokenProvider.generateJwtToken(userDetails), expirationTime);
+        } catch (RuntimeException ex) {
+            throw new RuntimeException(ex.getMessage());
+        }
     }
 
     @Override
     public void registerUser(SignupRequest signUpRequest) {
         try {
             User user = new User();
+            user.setUserId(idGenerator.generateCourtId("U"));
             user.setEmail(signUpRequest.getEmail());
             user.setPhoneNumber(signUpRequest.getPhoneNumber());
             user.setPasswordHash(encoder.encode(signUpRequest.getPassword()));

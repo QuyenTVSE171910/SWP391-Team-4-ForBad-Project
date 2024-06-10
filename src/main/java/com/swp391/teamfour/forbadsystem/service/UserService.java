@@ -11,19 +11,17 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 public interface UserService extends UserDetailsService {
-    public User findByEmail(String mail);
+    User findByEmail(String mail);
 
-    public User findByUserId(Long id);
+    boolean existsByEmail(String email);
 
-    public boolean existsByEmail(String email);
+    boolean existsByPhoneNumber(String phoneNumber);
 
-    public boolean existsByPhoneNumber(String phoneNumber);
+    UserInfor updateUser(User user);
 
-    public UserInfor updateUser(User user);
+    UserInfor getUserInfor(String emailOrPhoneNumber);
 
-    public UserInfor getUserInfor(String emailOrPhoneNumber);
+    void deleteUser(User user);
 
-    public void deleteUser(User user);
-
-    public boolean resetPassword(Long userId, String newPassword);
+    boolean resetPassword(String userId, String newPassword);
 }

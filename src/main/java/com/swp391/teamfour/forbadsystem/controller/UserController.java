@@ -11,7 +11,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("forbad/member")
+@RequestMapping("/member")
 public class UserController {
 
     @Autowired

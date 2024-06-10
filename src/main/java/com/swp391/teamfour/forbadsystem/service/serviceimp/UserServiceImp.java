@@ -32,11 +32,6 @@ public class UserServiceImp implements UserService {
     }
 
     @Override
-    public User findByUserId(Long id) {
-        return null;
-    }
-
-    @Override
     public boolean existsByEmail(String email) {
         return userRepository.existsByEmail(email);
     }
@@ -85,7 +80,7 @@ public class UserServiceImp implements UserService {
     }
 
     @Override
-    public boolean resetPassword(Long userId, String newPassword) {
+    public boolean resetPassword(String userId, String newPassword) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found."));
         if (user != null) {

@@ -5,7 +5,7 @@ import com.swp391.teamfour.forbadsystem.model.User;
 import org.springframework.stereotype.Service;
 
 public interface ForgotPasswordService {
-    public PasswordResetToken createTokenResetPassword(User user);
+    PasswordResetToken createTokenResetPassword(User user);
 
-    public PasswordResetToken validPasswordResetToken(String token);
+    String validPasswordResetToken(String token);
 }

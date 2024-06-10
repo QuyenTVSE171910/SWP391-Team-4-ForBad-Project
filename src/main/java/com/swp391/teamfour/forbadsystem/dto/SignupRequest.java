@@ -32,5 +32,5 @@ public class SignupRequest {
 
     private String profileAvatar;
 
-    private Long managerId;
+    private String managerId;
 }
