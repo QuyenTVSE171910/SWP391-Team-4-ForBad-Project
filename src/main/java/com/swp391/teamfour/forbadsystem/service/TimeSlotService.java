@@ -2,7 +2,6 @@ package com.swp391.teamfour.forbadsystem.service;
 
 import com.swp391.teamfour.forbadsystem.dto.TimeSlotRequest;
 import com.swp391.teamfour.forbadsystem.model.TimeSlot;
-import com.swp391.teamfour.forbadsystem.model.User;
 
 import java.util.List;
 
