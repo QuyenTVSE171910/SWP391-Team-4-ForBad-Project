@@ -10,6 +10,7 @@ import com.swp391.teamfour.forbadsystem.service.IdGenerator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Arrays;
 import java.util.List;
 
 @Service
@@ -54,7 +55,8 @@ public class CourtServiceImp implements CourtService {
             User owner = userRepository.findById(newCourt.getUserId())
                     .orElseThrow(() -> new RuntimeException("Chủ sân không tồn tại trong hệ thống."));
             court.setUser(owner);
-            courtRepository.save(court);
+            owner.setCourts(Arrays.asList(court));
+            userRepository.save(owner);
             return court;
         } catch (Exception ex) {
             throw ex;

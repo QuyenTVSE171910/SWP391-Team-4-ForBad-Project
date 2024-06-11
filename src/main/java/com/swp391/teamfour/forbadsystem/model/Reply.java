@@ -5,28 +5,21 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.List;
-
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "feedback")
-public class Feedback {
+@Table(name = "reply")
+public class Reply {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "feedback_id")
-    private Long feedbackId;
+    @Column(name = "reply_id")
+    private Long replyId;
 
-    @Column(nullable = false)
     private String comment;
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "user_id")
-    private User user;
-
-    @OneToMany(mappedBy = "feedback", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<Reply> replies;
-
+    @JoinColumn(name = "feedback_id")
+    private Feedback feedback;
 }

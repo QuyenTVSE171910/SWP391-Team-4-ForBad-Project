@@ -4,8 +4,10 @@ import com.swp391.teamfour.forbadsystem.model.PasswordResetToken;
 import com.swp391.teamfour.forbadsystem.model.User;
 import org.springframework.stereotype.Service;
 
-public interface ForgotPasswordService {
-    PasswordResetToken createTokenResetPassword(User user);
+import java.util.Map;
 
-    String validPasswordResetToken(String token);
+public interface ForgotPasswordService {
+    PasswordResetToken processForgotPassword(String email);
+
+    Map<String, String> validPasswordResetToken(String token);
 }
