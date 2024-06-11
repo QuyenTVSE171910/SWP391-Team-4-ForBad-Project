@@ -1,7 +1,6 @@
 package com.swp391.teamfour.forbadsystem.service.serviceimp;
 
 import com.swp391.teamfour.forbadsystem.dto.TimeSlotRequest;
-import com.swp391.teamfour.forbadsystem.model.Court;
 import com.swp391.teamfour.forbadsystem.model.TimeSlot;
 import com.swp391.teamfour.forbadsystem.model.User;
 import com.swp391.teamfour.forbadsystem.repository.TimeSlotRepository;
