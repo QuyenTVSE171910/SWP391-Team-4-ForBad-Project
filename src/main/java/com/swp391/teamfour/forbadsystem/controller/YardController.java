@@ -2,6 +2,7 @@ package com.swp391.teamfour.forbadsystem.controller;
 
 import com.swp391.teamfour.forbadsystem.dto.YardRequest;
 import com.swp391.teamfour.forbadsystem.model.Yard;
+import com.swp391.teamfour.forbadsystem.service.YardService;
 import com.swp391.teamfour.forbadsystem.service.serviceimp.YardServiceImp;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -16,27 +17,27 @@ import java.util.Map;
 @RequestMapping("/yard")
 public class YardController {
 
-    private final YardServiceImp yardServiceImp;
+    private final YardService yardService;
 
     @Autowired
-    public YardController(YardServiceImp yardServiceImp) {
-        this.yardServiceImp = yardServiceImp;
+    public YardController(YardService yardService) {
+        this.yardService = yardService;
     }
 
     @GetMapping("/findAllYard")
     @PreAuthorize("hasAnyAuthority('manager')")
     public ResponseEntity<?> findAllYardByCourt(@RequestBody YardRequest yardRequest) {
-        List<Yard> timeSlotList = yardServiceImp.getAllYardByCourtId(yardRequest.getCourtId());
+        List<Yard> timeSlotList = yardService.getAllYardByCourtId(yardRequest.getCourtId());
         if (timeSlotList == null) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Không thể tìm thấy tất cả các slot");
         }
         return ResponseEntity.ok(timeSlotList);
     }
 
-    @PutMapping("/createyard")
+    @PostMapping("/createyard")
     @PreAuthorize("hasAnyAuthority('manager')")
     public ResponseEntity<?> createYard(@RequestBody YardRequest yardRequest) {
-        Yard yardCreate = yardServiceImp.createYard(yardRequest);
+        Yard yardCreate = yardService.createYard(yardRequest);
         if (yardCreate == null) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Không thể tạo sân!!!");
         }
@@ -46,14 +47,14 @@ public class YardController {
     @PutMapping("/updateyard")
     @PreAuthorize("hasAnyAuthority('manager')")
     public ResponseEntity<?> updateYard(@RequestBody YardRequest yardRequest) {
-        return ResponseEntity.ok(yardServiceImp.updateYard(yardRequest));
+        return ResponseEntity.ok(yardService.updateYard(yardRequest));
     }
 
     @GetMapping("/findyard")
     @PreAuthorize("hasAnyAuthority('manager')")
     public ResponseEntity<?> findYardById(@RequestBody Map<String, String> yardIdJSON) {
         String yardId = yardIdJSON.get("yardId");
-        Yard yard = yardServiceImp.findYardById(yardId);
+        Yard yard = yardService.findYardById(yardId);
         if (yard == null) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Không thể tìm thấy sân " + yardId);
         }
@@ -64,11 +65,11 @@ public class YardController {
     @PreAuthorize("hasAnyAuthority('manager')")
     public ResponseEntity<?> deleteYard(@RequestBody Map<String, String> yardIdJSON) {
         String yardId = yardIdJSON.get("yardId");
-        Yard yard = yardServiceImp.findYardById(yardId);
+        Yard yard = yardService.findYardById(yardId);
         if (yard == null) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Không thể tìm thấy sân " + yardId);
         }
-        yardServiceImp.deleteYardById(yard.getYardId());
+        yardService.deleteYardById(yard.getYardId());
         return ResponseEntity.ok().body("Đã xóa thành công sân");
     }
 }
