@@ -3,7 +3,6 @@ package com.swp391.teamfour.forbadsystem.controller;
 import com.swp391.teamfour.forbadsystem.dto.YardRequest;
 import com.swp391.teamfour.forbadsystem.model.Yard;
 import com.swp391.teamfour.forbadsystem.service.YardService;
-import com.swp391.teamfour.forbadsystem.service.serviceimp.YardServiceImp;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
