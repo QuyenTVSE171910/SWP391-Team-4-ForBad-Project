@@ -21,7 +21,9 @@ public interface UserService extends UserDetailsService {
 
     UserInfor getUserInfor(String emailOrPhoneNumber);
 
-    void deleteUser(User user);
+    UserInfor getUserInfor();
+
+    void deleteUser(String userId);
 
     boolean resetPassword(String userId, String newPassword);
 }

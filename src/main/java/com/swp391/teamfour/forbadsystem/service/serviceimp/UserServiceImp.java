@@ -9,7 +9,10 @@ import com.swp391.teamfour.forbadsystem.service.EmailService;
 import com.swp391.teamfour.forbadsystem.service.UserService;
 import com.swp391.teamfour.forbadsystem.service.serviceimp.CustomUserDetails;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
@@ -43,40 +46,64 @@ public class UserServiceImp implements UserService {
 
     @Override
     public UserInfor updateUser(User user) {
-        User existingUser = userRepository.findById(user.getUserId()).orElseThrow(() -> new RuntimeException("Error: User not found."));
+        try {
+            User existingUser = userRepository.findById(user.getUserId()).orElseThrow(() -> new RuntimeException("Error: User not found."));
 
-        existingUser.setEmail(user.getEmail());
-        existingUser.setPhoneNumber(user.getPhoneNumber());
-        existingUser.setFullName(user.getFullName());
-        existingUser.setProfileAvatar(user.getProfileAvatar());
-        existingUser.setRole(user.getRole());
+            existingUser.setEmail(user.getEmail());
+            existingUser.setPhoneNumber(user.getPhoneNumber());
+            existingUser.setFullName(user.getFullName());
+            existingUser.setProfileAvatar(user.getProfileAvatar());
+            existingUser.setRole(user.getRole());
 
-        userRepository.save(existingUser);
-        return new UserInfor(existingUser.getUserId(), existingUser.getEmail(), existingUser.getPhoneNumber(), existingUser.getFullName(), existingUser.getProfileAvatar(),
-                existingUser.getRole().toString(), existingUser.getManager().getUserId());
+            userRepository.save(existingUser);
+            return new UserInfor(existingUser.getUserId(), existingUser.getEmail(), existingUser.getPhoneNumber(), existingUser.getFullName(), existingUser.getProfileAvatar(),
+                    existingUser.getRole().toString(), existingUser.getManager().getUserId());
+        } catch (Exception ex) {
+            throw ex;
+        }
     }
 
     @Override
-    public void deleteUser(User user) {
-        userRepository.deleteById(user.getUserId());
+    public void deleteUser(String userId) {
+        if (userRepository.existsById(userId)) {
+            userRepository.deleteById(userId);
+        } else throw new RuntimeException("Người dùng không tồn tại.");
     }
 
     @Override
     public UserDetails loadUserByUsername(String emailOrPhoneNumber) throws UsernameNotFoundException {
-            User user = userRepository.findByEmail(emailOrPhoneNumber)
-                    .orElseGet(() -> userRepository.findByPhoneNumber(emailOrPhoneNumber)
-                            .orElseThrow(() -> new UsernameNotFoundException("User Not Found with email or phone number: " + emailOrPhoneNumber)));
-            return CustomUserDetails.build(user);
+        User user = userRepository.findByEmail(emailOrPhoneNumber)
+                .orElseGet(() -> userRepository.findByPhoneNumber(emailOrPhoneNumber)
+                        .orElseThrow(() -> new UsernameNotFoundException("User Not Found with email or phone number: " + emailOrPhoneNumber)));
+        return CustomUserDetails.build(user);
     }
 
     @Override
     public UserInfor getUserInfor(String emailOrPhoneNumber) {
-        User user = userRepository.findByEmail(emailOrPhoneNumber)
-                .orElseGet(() -> userRepository.findByPhoneNumber(emailOrPhoneNumber)
-                        .orElseThrow(() -> new UsernameNotFoundException("User Not Found with email or phone number: " + emailOrPhoneNumber)));
-        CustomUserDetails userDetails = CustomUserDetails.build(user);
+        try {
+            User user = userRepository.findByEmail(emailOrPhoneNumber)
+                    .orElseGet(() -> userRepository.findByPhoneNumber(emailOrPhoneNumber)
+                            .orElseThrow(() -> new UsernameNotFoundException("User Not Found with email or phone number: " + emailOrPhoneNumber)));
+            CustomUserDetails userDetails = CustomUserDetails.build(user);
 
-        return UserInfor.build(userDetails);
+            return UserInfor.build(userDetails);
+        } catch (Exception ex) {
+            throw ex;
+        }
+    }
+
+    @Override
+    public UserInfor getUserInfor() {
+        try {
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+            UserInfor userInfor = new UserInfor(userDetails.getUserId(), userDetails.getEmail(), userDetails.getPhoneNumber(),
+                    userDetails.getFullName(), userDetails.getProfileAvatar(),
+                    userDetails.getRole().toString(), userDetails.getManagerId());
+            return userInfor;
+        } catch (Exception ex) {
+            throw new RuntimeException("Có lỗi xảy ra. Vui lòng thử lại.");
+        }
     }
 
     @Override
