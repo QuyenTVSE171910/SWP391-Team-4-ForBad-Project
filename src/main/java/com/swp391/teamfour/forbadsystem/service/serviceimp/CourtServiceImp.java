@@ -10,7 +10,6 @@ import com.swp391.teamfour.forbadsystem.service.IdGenerator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Arrays;
 import java.util.List;
 
 @Service
@@ -38,7 +37,7 @@ public class CourtServiceImp implements CourtService {
         try {
             User owner = userRepository.findById(userId)
                     .orElseThrow(() -> new RuntimeException("Chủ sân không tồn tại trong hệ thống."));
-            return courtRepository.getAllByUser(owner);
+            return owner.getCourts();
         } catch (Exception ex) {
             throw ex;
         }
@@ -55,7 +54,7 @@ public class CourtServiceImp implements CourtService {
             User owner = userRepository.findById(newCourt.getUserId())
                     .orElseThrow(() -> new RuntimeException("Chủ sân không tồn tại trong hệ thống."));
             court.setUser(owner);
-            owner.setCourts(Arrays.asList(court));
+            owner.getCourts().add(court);
             userRepository.save(owner);
             return court;
         } catch (Exception ex) {
@@ -87,20 +86,6 @@ public class CourtServiceImp implements CourtService {
             existingCourt.setCloseTime(courtRequest.getCloseTime());
             courtRepository.save(existingCourt);
             return existingCourt;
-        } catch (Exception ex) {
-            throw ex;
-        }
-    }
-
-    @Override
-    public void updateRate(int rate, String courtId) {
-        try {
-            Court existingCourt = courtRepository.findById(courtId)
-                    .orElseThrow(() -> new RuntimeException("Không tồn tại cơ sở này trong hệ thống."));
-            int existingRate = courtRepository.getRateByCourtId(courtId);
-            int newRate = (existingRate + rate) / 2;
-            existingCourt.setRate(newRate);
-            courtRepository.save(existingCourt);
         } catch (Exception ex) {
             throw ex;
         }

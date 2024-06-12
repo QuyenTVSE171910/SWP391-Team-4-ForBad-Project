@@ -25,12 +25,9 @@ public class YardController {
 
     @GetMapping("/findAllYard")
     @PreAuthorize("hasAnyAuthority('manager')")
-    public ResponseEntity<?> findAllYardByCourt(@RequestBody YardRequest yardRequest) {
-        List<Yard> timeSlotList = yardService.getAllYardByCourtId(yardRequest.getCourtId());
-        if (timeSlotList == null) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Không thể tìm thấy tất cả các slot");
-        }
-        return ResponseEntity.ok(timeSlotList);
+    public ResponseEntity<?> findAllYardByCourt(@RequestParam String courtId) {
+        List<Yard> yards = yardService.getAllYardByCourtId(courtId);
+        return ResponseEntity.ok(yards);
     }
 
     @PostMapping("/createyard")

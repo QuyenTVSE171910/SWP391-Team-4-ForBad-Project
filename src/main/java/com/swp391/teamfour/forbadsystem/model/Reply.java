@@ -1,5 +1,6 @@
 package com.swp391.teamfour.forbadsystem.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -21,5 +22,6 @@ public class Reply {
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "feedback_id")
+    @JsonIgnore
     private Feedback feedback;
 }

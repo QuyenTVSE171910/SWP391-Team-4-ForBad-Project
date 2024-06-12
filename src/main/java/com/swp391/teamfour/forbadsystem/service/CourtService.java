@@ -17,6 +17,4 @@ public interface CourtService {
     void deleteCourt(String courtId);
 
     Court updateCourt(CourtRequest courtRequest);
-
-    void updateRate(int rate, String courtId);
 }

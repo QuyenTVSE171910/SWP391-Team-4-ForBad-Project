@@ -8,12 +8,13 @@ import java.util.List;
 
 public interface YardService {
 
-    public List<Yard> getAllYardByCourtId(String courtId);
-    public Yard createYard(YardRequest yardRequest);
+    List<Yard> getAllYardByCourtId(String courtId);
 
-    public Yard updateYard(YardRequest yardRequest);
+    Yard createYard(YardRequest yardRequest);
 
-    public Yard findYardById(String yardId);
+    Yard updateYard(YardRequest yardRequest);
 
-    public void deleteYardById(String yardId);
+    Yard findYardById(String yardId);
+
+    void deleteYardById(String yardId);
 }

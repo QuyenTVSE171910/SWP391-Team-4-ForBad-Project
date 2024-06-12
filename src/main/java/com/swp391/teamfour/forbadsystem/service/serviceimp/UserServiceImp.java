@@ -28,13 +28,6 @@ public class UserServiceImp implements UserService {
     private UserRepository userRepository;
 
     @Override
-    public User findByEmail(String mail) {
-        User user = userRepository.findByEmail(mail)
-                .orElseThrow(() -> new BadCredentialsException("Người dùng không tồn tại trong hệ thống."));
-        return user;
-    }
-
-    @Override
     public boolean existsByEmail(String email) {
         return userRepository.existsByEmail(email);
     }

@@ -32,7 +32,7 @@ public class YardServiceImp implements YardService {
     @Override
     public List<Yard> getAllYardByCourtId(String courtId) {
         Court court = courtRepository.findById(courtId).orElseThrow(() -> new RuntimeException("Sân không tồn tại trong hệ thống."));
-        return yardRepository.findYardByCourt(court);
+        return court.getYards().stream().toList();
     }
 
     @Override
@@ -45,7 +45,8 @@ public class YardServiceImp implements YardService {
             Court court = courtRepository.findById(yardRequest.getCourtId())
                     .orElseThrow(() -> new RuntimeException("Cơ sở không tồn tại trong hệ thống."));
             yard.setCourt(court);
-            yardRepository.save(yard);
+            court.getYards().add(yard);
+            courtRepository.save(court);
             return yard;
         } catch (Exception ex) {
             throw ex;

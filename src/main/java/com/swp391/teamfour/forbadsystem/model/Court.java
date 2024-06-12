@@ -1,15 +1,15 @@
 package com.swp391.teamfour.forbadsystem.model;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.swp391.teamfour.forbadsystem.service.IdGenerator;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.Set;
 
 @Data
 @NoArgsConstructor
@@ -35,11 +35,16 @@ public class Court {
     @JsonFormat(pattern = "HH:mm")
     private LocalTime closeTime;
 
-    private int rate;
+    private double rate;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id")
+    @JsonIgnore
     private User user;
+
+    @OneToMany(mappedBy = "court", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonIgnore
+    private List<Yard> yards;
 
     public Court(String courtName, String address, LocalTime openTime, LocalTime closeTime, int rate) {
         this.courtName = courtName;

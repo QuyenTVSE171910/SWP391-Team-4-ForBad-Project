@@ -1,9 +1,7 @@
 package com.swp391.teamfour.forbadsystem.jwt;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.swp391.teamfour.forbadsystem.constants.AuthenticationPath;
 import com.swp391.teamfour.forbadsystem.exception.AuthenticationExceptionHandler;
-import com.swp391.teamfour.forbadsystem.exception.ErrorResponse;
 import com.swp391.teamfour.forbadsystem.service.UserService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -12,7 +10,6 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -38,27 +35,29 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             String token = getTokenFromRequest(request);
 
             if (AuthenticationPath.requiresAuthentication(request)) {
-                if (StringUtils.hasText(token)) {
-                    if (jwtTokenProvider.validateJwtToken(token)) {
-                        String email = jwtTokenProvider.getUserNameFromJwtToken(token);
-                        UserDetails userDetails = userService.loadUserByUsername(email);
-                        if (userDetails != null) {
-                            UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
-                            authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-                            SecurityContextHolder.getContext().setAuthentication(authentication);
-                            filterChain.doFilter(request, response);
-                        } else {
-                            AuthenticationExceptionHandler.handleJwtError(request, response, "Token không hợp lệ.");
-                            return;
-                        }
-                    } else {
-                        AuthenticationExceptionHandler.handleJwtError(request, response, "Token không hợp lệ hoặc đã hết hạn.");
-                        return;
-                    }
-                } else {
+                if (!StringUtils.hasText(token)) {
                     AuthenticationExceptionHandler.handleJwtError(request, response, "Không có token.");
                     return;
                 }
+
+                if (!jwtTokenProvider.validateJwtToken(token)) {
+                    AuthenticationExceptionHandler.handleJwtError(request, response, "Token không hợp lệ hoặc đã hết hạn.");
+                    return;
+                }
+
+                String email = jwtTokenProvider.getUserNameFromJwtToken(token);
+                UserDetails userDetails = userService.loadUserByUsername(email);
+
+                if (userDetails == null) {
+                    AuthenticationExceptionHandler.handleJwtError(request, response, "Token không hợp lệ.");
+                    return;
+                }
+
+                UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+                authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                SecurityContextHolder.getContext().setAuthentication(authentication);
+                filterChain.doFilter(request, response);
+
             } else {
                 filterChain.doFilter(request, response);
             }

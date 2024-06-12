@@ -11,6 +11,7 @@ import java.util.List;
 public interface YardRepository extends JpaRepository<Yard, String> {
 
     List<Yard> findYardByCourt(Court court);
+
     Yard findByYardId(String yardId);
 
 }
