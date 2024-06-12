@@ -23,10 +23,10 @@ public class TimeSlotController {
         this.timeSlotService = timeSlotService;
     }
 
-    @GetMapping("/findAllSlot")
+    @GetMapping("/findAllSlot/{ownerId}")
     @PreAuthorize("hasAnyAuthority('manager')")
-    public ResponseEntity<?> findAllSlotByUser(@RequestBody TimeSlotRequest timeSlotRequest){
-        List<TimeSlot> timeSlotList = timeSlotService.findAllSlotByUserId(timeSlotRequest.getUserId());
+    public ResponseEntity<?> findAllSlotByUser(@PathVariable String ownerId){
+        List<TimeSlot> timeSlotList = timeSlotService.findAllSlotByUserId(ownerId);
         if (timeSlotList == null){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Không thể tìm thấy tất cả các slot");
         }

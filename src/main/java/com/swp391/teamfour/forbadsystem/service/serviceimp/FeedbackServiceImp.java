@@ -33,9 +33,10 @@ public class FeedbackServiceImp implements FeedbackService {
         try {
             if (yardId == null) throw new RuntimeException("YardId trống.");
             Yard yard = yardRepository.findByYardId(yardId);
+
             if (yard == null) throw new RuntimeException("Không tồn tại sân này trong hệ thống.");
-            List<Feedback> feedbacks = yard.getFeedbacks();
-            return feedbacks;
+
+            return yard.getFeedbacks();
         } catch (Exception ex) {
             throw ex;
         }
@@ -95,19 +96,4 @@ public class FeedbackServiceImp implements FeedbackService {
             throw ex;
         }
     }
-
-//    @Override
-//    public ReplyRequest replyFeedback(ReplyRequest replyRequest) {
-//        try {
-//            Feedback feedback = feedbackRepository.findById(replyRequest.getFeedbackId())
-//                    .orElseThrow(() -> new RuntimeException("Feedback này không tồn tại trong hệ thống."));
-//            Reply reply = new Reply();
-//            reply.setComment(replyRequest.getComment());
-//            reply.setFeedback(feedback);
-//            feedback.getReplies().add(reply);
-//
-//        } catch (Exception ex) {
-//            throw ex;
-//        }
-//    }
 }

@@ -22,15 +22,13 @@ public class CourtController {
     @GetMapping("/all")
     @PreAuthorize("hasAuthority('admin')")
     public ResponseEntity<?> getAll() {
-        List<Court> courts = courtService.getAll();
-        return ResponseEntity.ok(courts);
+        return ResponseEntity.ok(courtService.getAll());
     }
 
     @GetMapping("/all-of-owner")
     @PreAuthorize("hasAuthority('manager')")
     public ResponseEntity<?> getAllCourtOfOwner(@RequestParam String userId) {
-        List<Court> courts = courtService.getAllOfOwner(userId);
-        return ResponseEntity.ok(courts);
+        return ResponseEntity.ok(courtService.getAllOfOwner(userId));
     }
 
     @PostMapping("/add")
@@ -50,8 +48,7 @@ public class CourtController {
     @PutMapping("/update")
     @PreAuthorize("hasAnyAuthority('admin', 'manager')")
     public ResponseEntity<?> updateCourt(@RequestBody CourtRequest courtRequest) {
-        Court court = courtService.updateCourt(courtRequest);
-        return ResponseEntity.ok(court);
+        return ResponseEntity.ok(courtService.updateCourt(courtRequest));
     }
 
 }

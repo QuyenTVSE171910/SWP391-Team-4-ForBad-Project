@@ -12,9 +12,9 @@ public interface CourtService {
 
     List<Court> getAllOfOwner(String userId);
 
-    Court addCourt(CourtRequest newCourt);
+    CourtRequest addCourt(CourtRequest newCourt);
 
     void deleteCourt(String courtId);
 
-    Court updateCourt(CourtRequest courtRequest);
+    CourtRequest updateCourt(CourtRequest courtRequest);
 }

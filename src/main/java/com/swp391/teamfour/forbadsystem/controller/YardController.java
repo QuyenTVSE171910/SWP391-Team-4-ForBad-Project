@@ -68,4 +68,11 @@ public class YardController {
         yardService.deleteYardById(yard.getYardId());
         return ResponseEntity.ok().body("Đã xóa thành công sân");
     }
+
+    @PostMapping("/{yardId}/timeslot/{timeSlotId}")
+    @PreAuthorize("hasAnyAuthority('manager')")
+    public ResponseEntity<?> addTimeSlotToYard(@PathVariable String yardId, @PathVariable String timeSlotId) {
+        yardService.addTimeSlotToYard(yardId, timeSlotId);
+        return ResponseEntity.ok().body("Đã thêm slot " + timeSlotId + " vào sân " + yardId + " thành công.");
+    }
 }

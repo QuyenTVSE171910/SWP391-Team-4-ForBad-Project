@@ -44,7 +44,7 @@ public class CourtServiceImp implements CourtService {
     }
 
     @Override
-    public Court addCourt(CourtRequest newCourt) {
+    public CourtRequest addCourt(CourtRequest newCourt) {
         try {
             Court court = new Court(newCourt.getCourtName(), newCourt.getAddress(),
                     newCourt.getOpenTime(), newCourt.getCloseTime(), 0);
@@ -56,7 +56,7 @@ public class CourtServiceImp implements CourtService {
             court.setUser(owner);
             owner.getCourts().add(court);
             userRepository.save(owner);
-            return court;
+            return CourtRequest.build(court);
         } catch (Exception ex) {
             throw ex;
         }
@@ -76,7 +76,7 @@ public class CourtServiceImp implements CourtService {
     }
 
     @Override
-    public Court updateCourt(CourtRequest courtRequest) {
+    public CourtRequest updateCourt(CourtRequest courtRequest) {
         try {
             Court existingCourt = courtRepository.findById(courtRequest.getCourtId())
                     .orElseThrow(() -> new RuntimeException("Không tồn tại cơ sở này trong hệ thống."));
@@ -85,7 +85,7 @@ public class CourtServiceImp implements CourtService {
             existingCourt.setOpenTime(courtRequest.getOpenTime());
             existingCourt.setCloseTime(courtRequest.getCloseTime());
             courtRepository.save(existingCourt);
-            return existingCourt;
+            return CourtRequest.build(existingCourt);
         } catch (Exception ex) {
             throw ex;
         }
