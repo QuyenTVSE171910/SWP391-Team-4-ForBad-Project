@@ -5,9 +5,8 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
 import java.util.List;
-import java.util.Set;
+import java.util.Collection;
 
 @Data
 @NoArgsConstructor
@@ -28,9 +27,15 @@ public class Yard {
     @JsonIgnore
     private Court court;
 
+
     @OneToMany(mappedBy = "yard", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     @JsonIgnore
     private List<Feedback> feedbacks;
+
+    @ManyToMany
+    @JoinTable(name = "yard_schedule", joinColumns = @JoinColumn(name = "yard_id"),
+            inverseJoinColumns = @JoinColumn(name = "slot_id"))
+    private Collection<TimeSlot> timeSlots;
 
     public Yard(String yardName) {
         this.yardName = yardName;

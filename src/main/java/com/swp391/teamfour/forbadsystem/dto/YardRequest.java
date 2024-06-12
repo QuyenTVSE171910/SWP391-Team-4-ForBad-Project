@@ -14,4 +14,6 @@ public class YardRequest {
     private String yardName;
 
     private String courtId;
+
+    private String slotId;
 }

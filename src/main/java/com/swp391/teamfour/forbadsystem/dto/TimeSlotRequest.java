@@ -25,4 +25,6 @@ public class TimeSlotRequest {
     private float price;
 
     private String userId;
+
+    private String yardId;
 }

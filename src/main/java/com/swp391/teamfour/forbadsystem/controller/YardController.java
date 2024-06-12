@@ -37,7 +37,7 @@ public class YardController {
         if (yardCreate == null) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Không thể tạo sân!!!");
         }
-        return ResponseEntity.ok(yardCreate);
+        return ResponseEntity.ok().body("Đã tạo thành công sân mới!!!(" + yardCreate.getYardId() + ")");
     }
 
     @PutMapping("/updateyard")

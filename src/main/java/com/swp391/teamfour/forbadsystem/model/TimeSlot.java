@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalTime;
+import java.util.Collection;
 
 @Data
 @NoArgsConstructor
@@ -33,6 +34,9 @@ public class TimeSlot {
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
+
+    @ManyToMany(mappedBy = "timeSlots")
+    private Collection<Yard> yards;
 
     public TimeSlot(String slotName, LocalTime startTime, LocalTime endTime, float price) {
         this.slotName = slotName;
