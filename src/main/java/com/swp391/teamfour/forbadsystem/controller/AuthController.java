@@ -1,0 +1,72 @@
+package com.swp391.teamfour.forbadsystem.controller;
+
+import com.swp391.teamfour.forbadsystem.dto.*;
+import com.swp391.teamfour.forbadsystem.exception.AuthenticationExceptionHandler;
+import com.swp391.teamfour.forbadsystem.service.AuthService;
+import com.swp391.teamfour.forbadsystem.service.UserService;
+import jakarta.validation.Valid;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.*;
+
+@CrossOrigin(origins = "*", maxAge = 3600)
+@RestController
+@RequestMapping("/auth")
+public class AuthController {
+    @Autowired
+    private AuthService authService;
+
+    @Autowired
+    private UserService userService;
+
+    @PostMapping("/signin")
+    public ResponseEntity<?> authenticateUser(@Valid @RequestBody SigninRequest signinRequest, BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            return ResponseEntity.badRequest().body(AuthenticationExceptionHandler.getValidationErrors(bindingResult));
+        }
+
+        UserInfor userInfor = authService.authenticateUser(signinRequest);
+
+        return ResponseEntity.ok(userInfor);
+    }
+
+    @PostMapping("/signup")
+    public ResponseEntity<?> register(@Valid @RequestBody SignupRequest signUpRequest, BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            return ResponseEntity.badRequest().body(AuthenticationExceptionHandler.getValidationErrors(bindingResult));
+        }
+
+        if (userService.existsByEmail(signUpRequest.getEmail())) {
+            return ResponseEntity.badRequest().body(new MessageResponse("Error: Email is already in use!"));
+        }
+
+        if (userService.existsByPhoneNumber(signUpRequest.getPhoneNumber())) {
+            return ResponseEntity.badRequest().body(new MessageResponse("Error: Phone number is already in use!"));
+        }
+
+        authService.registerUser(signUpRequest);
+
+        return ResponseEntity.ok(new MessageResponse("User registered successfully!"));
+    }
+
+    @PostMapping("/authenticate")
+    public ResponseEntity<?> getJwtToken(@RequestBody RoleSelectionRequest roleSelectionRequest) {
+
+        JwtResponse jwtResponse = authService.getJwtToken(roleSelectionRequest);
+        return ResponseEntity.ok(jwtResponse);
+    }
+
+    @GetMapping("/google")
+    public ResponseEntity<?> googleLogin() {
+        return ResponseEntity.ok(new GoogleAuthResponse(authService.getGoogleAuthUrl()));
+    }
+
+    @GetMapping("/google/callback")
+    public ResponseEntity<?> googleCallback(@RequestParam("code") String code) {
+
+        UserInfor userInfor = authService.handleGoogleCallBack(code);
+
+        return ResponseEntity.ok().body(userInfor);
+    }
+}
