@@ -1,7 +1,10 @@
 package com.swp391.teamfour.forbadsystem.service;
 
 
-import com.swp391.teamfour.forbadsystem.dto.*;
+import com.swp391.teamfour.forbadsystem.dto.JwtResponse;
+import com.swp391.teamfour.forbadsystem.dto.SigninRequest;
+import com.swp391.teamfour.forbadsystem.dto.SignupRequest;
+import com.swp391.teamfour.forbadsystem.dto.UserInfor;
 import com.swp391.teamfour.forbadsystem.model.User;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.stereotype.Service;
@@ -10,17 +13,19 @@ import java.util.Map;
 
 
 public interface AuthService {
-    UserInfor authenticateUser(SigninRequest signinRequest);
+    public UserInfor authenticateUser(SigninRequest signinRequest);
 
-    void registerUser(SignupRequest signUpRequest);
+    public void registerUser(SignupRequest signUpRequest);
 
-    String getGoogleAuthUrl();
+    public String getGoogleAuthUrl();
 
-    UserInfor handleGoogleCallBack(String code);
+    public UserInfor handleGoogleCallBack(String code);
 
-    Map<String, String> buildAccessTokenRequest(String code);
+    public Map<String, String> buildAccessTokenRequest(String code);
 
-    JwtResponse getJwtToken(RoleSelectionRequest roleSelectionRequest);
+    public JwtResponse getJwtToken(UserInfor user);
+
+
 
 
 }

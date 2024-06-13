@@ -1,18 +1,25 @@
 package com.swp391.teamfour.forbadsystem.controller;
 
 import com.swp391.teamfour.forbadsystem.dto.*;
-import com.swp391.teamfour.forbadsystem.exception.AuthenticationExceptionHandler;
+import com.swp391.teamfour.forbadsystem.repository.UserRepository;
 import com.swp391.teamfour.forbadsystem.service.AuthService;
 import com.swp391.teamfour.forbadsystem.service.UserService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
+
+import java.io.IOException;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
-@RequestMapping("/auth")
+@RequestMapping("/forbad/auth")
 public class AuthController {
     @Autowired
     private AuthService authService;
@@ -23,7 +30,13 @@ public class AuthController {
     @PostMapping("/signin")
     public ResponseEntity<?> authenticateUser(@Valid @RequestBody SigninRequest signinRequest, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
-            return ResponseEntity.badRequest().body(AuthenticationExceptionHandler.getValidationErrors(bindingResult));
+            List<String> errors = bindingResult
+                    .getFieldErrors()
+                    .stream()
+                    .map(FieldError::getDefaultMessage)
+                    .collect(Collectors.toList());
+
+            return ResponseEntity.badRequest().body(errors);
         }
 
         UserInfor userInfor = authService.authenticateUser(signinRequest);
@@ -34,15 +47,24 @@ public class AuthController {
     @PostMapping("/signup")
     public ResponseEntity<?> register(@Valid @RequestBody SignupRequest signUpRequest, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
-            return ResponseEntity.badRequest().body(AuthenticationExceptionHandler.getValidationErrors(bindingResult));
-        }
+            List<String> errors = bindingResult
+                    .getFieldErrors()
+                    .stream()
+                    .map(FieldError::getDefaultMessage)
+                    .collect(Collectors.toList());
 
+            return ResponseEntity.badRequest().body(errors);
+        }
         if (userService.existsByEmail(signUpRequest.getEmail())) {
-            return ResponseEntity.badRequest().body(new MessageResponse("Error: Email is already in use!"));
+            return ResponseEntity
+                    .badRequest()
+                    .body(new MessageResponse("Error: Email is already in use!"));
         }
 
         if (userService.existsByPhoneNumber(signUpRequest.getPhoneNumber())) {
-            return ResponseEntity.badRequest().body(new MessageResponse("Error: Phone number is already in use!"));
+            return ResponseEntity
+                    .badRequest()
+                    .body(new MessageResponse("Error: Phone number is already in use!"));
         }
 
         authService.registerUser(signUpRequest);
@@ -51,9 +73,9 @@ public class AuthController {
     }
 
     @PostMapping("/authenticate")
-    public ResponseEntity<?> getJwtToken(@RequestBody RoleSelectionRequest roleSelectionRequest) {
+    public ResponseEntity<?> getJwtToken(@RequestBody UserInfor userInfor) {
 
-        JwtResponse jwtResponse = authService.getJwtToken(roleSelectionRequest);
+        JwtResponse jwtResponse = authService.getJwtToken(userInfor);
         return ResponseEntity.ok(jwtResponse);
     }
 
@@ -63,7 +85,7 @@ public class AuthController {
     }
 
     @GetMapping("/google/callback")
-    public ResponseEntity<?> googleCallback(@RequestParam("code") String code) {
+    public ResponseEntity<?> googleCallback(@RequestParam("code") String code) throws IOException {
 
         UserInfor userInfor = authService.handleGoogleCallBack(code);
 

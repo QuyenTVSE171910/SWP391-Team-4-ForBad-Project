@@ -1,13 +1,9 @@
 package com.swp391.teamfour.forbadsystem.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import java.util.List;
-import java.util.Set;
 
 @Data
 @NoArgsConstructor
@@ -18,8 +14,9 @@ import java.util.Set;
 public class User {
 
     @Id()
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "user_id")
-    private String userId;
+    private Long userId;
 
     @Column(length = 100, nullable = false)
     private String email;
@@ -44,7 +41,5 @@ public class User {
     @JoinColumn(name = "manager_id", referencedColumnName = "user_id")
     private User manager;
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
-    @JsonIgnore
-    private List<Court> courts;
+
 }

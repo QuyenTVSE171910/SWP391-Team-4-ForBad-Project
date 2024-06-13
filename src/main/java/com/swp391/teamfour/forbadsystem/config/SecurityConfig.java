@@ -53,6 +53,19 @@ public class SecurityConfig {
         return authenticationManagerBuilder.build();
     }
 
+    @Bean
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        http
+                .cors().and()
+                .authorizeHttpRequests(authorize -> authorize.requestMatchers("/forbad/auth/**").permitAll()
+                        .requestMatchers("/forbad/forgot-password/**").permitAll()
+                        .anyRequest().authenticated()
+                )
+                .csrf().disable()
+                .addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
+                .oauth2Login();
+        return http.build();
+    }
 
     @Bean
     public CorsFilter corsFilter() {
@@ -66,22 +79,6 @@ public class SecurityConfig {
 
         return new CorsFilter(source);
     }
-
-    @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http
-                .cors().and()
-                .authorizeHttpRequests(authorize -> authorize.requestMatchers("/auth/**").permitAll()
-                        .requestMatchers("/forgot-password/**").permitAll()
-                        .anyRequest().authenticated()
-                )
-                .csrf().disable()
-                .addFilterAfter(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
-                .oauth2Login();
-        return http.build();
-    }
-
-
 
 
 }
