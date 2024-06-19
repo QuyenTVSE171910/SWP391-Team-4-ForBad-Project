@@ -1,7 +1,7 @@
 package com.swp391.teamfour.forbadsystem.service;
 
-import com.swp391.teamfour.forbadsystem.dto.YardRequest;
-import com.swp391.teamfour.forbadsystem.model.Court;
+import com.swp391.teamfour.forbadsystem.dto.request.YardRequest;
+import com.swp391.teamfour.forbadsystem.model.TimeSlot;
 import com.swp391.teamfour.forbadsystem.model.Yard;
 
 import java.util.List;
@@ -19,4 +19,6 @@ public interface YardService {
     void deleteYardById(String yardId);
 
     void addTimeSlotToYard(String yardId, String slotId);
+
+    List<TimeSlot> getAllByYardId(String yardId);
 }

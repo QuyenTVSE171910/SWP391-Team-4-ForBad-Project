@@ -1,13 +1,13 @@
 package com.swp391.teamfour.forbadsystem.service.serviceimp;
 
-import com.swp391.teamfour.forbadsystem.dto.YardRequest;
+import com.swp391.teamfour.forbadsystem.dto.request.YardRequest;
 import com.swp391.teamfour.forbadsystem.model.Court;
 import com.swp391.teamfour.forbadsystem.model.TimeSlot;
 import com.swp391.teamfour.forbadsystem.model.Yard;
 import com.swp391.teamfour.forbadsystem.repository.CourtRepository;
 import com.swp391.teamfour.forbadsystem.repository.TimeSlotRepository;
 import com.swp391.teamfour.forbadsystem.repository.YardRepository;
-import com.swp391.teamfour.forbadsystem.service.IdGenerator;
+import com.swp391.teamfour.forbadsystem.utils.IdGenerator;
 import com.swp391.teamfour.forbadsystem.service.YardService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -42,13 +42,19 @@ public class YardServiceImp implements YardService {
     @Override
     public Yard createYard(YardRequest yardRequest) {
         try {
-            Yard yard = new Yard(yardRequest.getYardName());
+            Yard yard = new Yard();
             if (yardRequest.getYardId() == null) {
                 yard.setYardId(idGenerator.generateCourtId("Y"));
             }
             Court court = courtRepository.findById(yardRequest.getCourtId())
                     .orElseThrow(() -> new RuntimeException("Cơ sở không tồn tại trong hệ thống."));
             yard.setCourt(court);
+
+            boolean yardExists = court.getYards().stream().anyMatch(y -> y.getYardName().equals(yardRequest.getYardName()));
+
+            if (yardExists) throw new RuntimeException("Sân này đã có trong cơ sở này.");
+            yard.setYardName(yardRequest.getYardName());
+
             court.getYards().add(yard);
             courtRepository.save(court);
             return yard;
@@ -101,11 +107,29 @@ public class YardServiceImp implements YardService {
             TimeSlot slot = timeSlotRepository.findById(slotId)
                     .orElseThrow(() -> new RuntimeException("Time slot này không tồn tại trong hệ thống."));
 
-            yard.getTimeSlots().add(slot);
-            slot.getYards().add(yard);
+            if (!yard.getTimeSlots().contains(slot)) {
+                yard.getTimeSlots().add(slot);
+                slot.getYards().add(yard);
+            } else {
+                throw new RuntimeException("Slot này đã có trong sân.");
+            }
 
             yardRepository.save(yard);
             timeSlotRepository.save(slot);
+        } catch (Exception ex) {
+            throw ex;
+        }
+    }
+
+    @Override
+    public List<TimeSlot> getAllByYardId(String yardId) {
+        try {
+            Yard existingYard = yardRepository.findById(yardId)
+                    .orElseThrow(() -> new RuntimeException("Sân này không có trong hệ thống."));
+
+            if (existingYard.getTimeSlots().isEmpty()) throw new RuntimeException("Sân này chưa có time slot nào.");
+
+            return existingYard.getTimeSlots().stream().toList();
         } catch (Exception ex) {
             throw ex;
         }

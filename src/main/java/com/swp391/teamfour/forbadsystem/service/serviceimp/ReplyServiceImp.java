@@ -1,6 +1,6 @@
 package com.swp391.teamfour.forbadsystem.service.serviceimp;
 
-import com.swp391.teamfour.forbadsystem.dto.ReplyRequest;
+import com.swp391.teamfour.forbadsystem.dto.request.ReplyRequest;
 import com.swp391.teamfour.forbadsystem.model.Feedback;
 import com.swp391.teamfour.forbadsystem.model.Reply;
 import com.swp391.teamfour.forbadsystem.repository.FeedbackRepository;
@@ -25,6 +25,8 @@ public class ReplyServiceImp implements ReplyService {
         try {
             Feedback feedback = feedbackRepository.findById(feedbackId)
                     .orElseThrow(() -> new RuntimeException("Feedback này không tồn tại trong hệ thống."));
+
+            if (feedback.getReplies().isEmpty()) throw new RuntimeException("Không có phản hồi nào.");
 
             return feedback.getReplies();
         } catch (Exception ex) {

@@ -3,11 +3,10 @@ package com.swp391.teamfour.forbadsystem.model;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.LocalTime;
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
@@ -37,14 +36,26 @@ public class Court {
 
     private double rate;
 
+    private String imageUrl;
+
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id")
+    @EqualsAndHashCode.Exclude // không sử dụng trường này trong equals và hashcode
+    @ToString.Exclude // Khoonhg sử dụng trong toString()
     @JsonIgnore
     private User user;
 
     @OneToMany(mappedBy = "court", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @EqualsAndHashCode.Exclude // không sử dụng trường này trong equals và hashcode
+    @ToString.Exclude // Khoonhg sử dụng trong toString()
     @JsonIgnore
     private List<Yard> yards;
+
+    @ManyToMany(mappedBy = "workplaces", fetch = FetchType.EAGER)
+    @EqualsAndHashCode.Exclude // không sử dụng trường này trong equals và hashcode
+    @ToString.Exclude // Khoonhg sử dụng trong toString()
+    @JsonIgnore
+    private Collection<User> staffs;
 
     public Court(String courtName, String address, LocalTime openTime, LocalTime closeTime, int rate) {
         this.courtName = courtName;

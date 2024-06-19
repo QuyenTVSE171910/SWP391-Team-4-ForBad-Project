@@ -17,7 +17,6 @@ public class CustomUserDetails implements UserDetails {
 
     private String userId;
     private String email;
-    private String phoneNumber;
     @JsonIgnore
     private String password;
     private String fullName;
@@ -32,7 +31,6 @@ public class CustomUserDetails implements UserDetails {
         return new CustomUserDetails(
                 user.getUserId(),
                 user.getEmail(),
-                user.getPhoneNumber(),
                 user.getPasswordHash(),
                 user.getFullName(),
                 user.getProfileAvatar(),

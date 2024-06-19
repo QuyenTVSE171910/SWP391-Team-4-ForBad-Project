@@ -1,15 +1,15 @@
-package com.swp391.teamfour.forbadsystem.dto;
+package com.swp391.teamfour.forbadsystem.dto.response;
 
-import com.swp391.teamfour.forbadsystem.model.Role;
 import lombok.AllArgsConstructor;
 import lombok.Data;
-
-import java.util.Date;
-import java.util.List;
 
 @Data
 @AllArgsConstructor
 public class JwtResponse {
+    private String userId;
+    private String fullName;
+    private String imageUrl;
+    private String role;
     private String accessToken;
     private Long expirationTime;
 }

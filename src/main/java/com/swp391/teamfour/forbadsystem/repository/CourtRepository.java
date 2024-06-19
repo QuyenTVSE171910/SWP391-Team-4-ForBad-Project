@@ -9,8 +9,4 @@ import java.util.List;
 
 @Repository
 public interface CourtRepository extends JpaRepository<Court, String> {
-
-    List<Court> getAllByUser(User user);
-
-    int getRateByCourtId(String courtId);
 }

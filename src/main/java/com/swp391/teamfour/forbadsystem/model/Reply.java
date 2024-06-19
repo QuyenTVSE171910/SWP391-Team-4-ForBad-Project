@@ -2,9 +2,7 @@ package com.swp391.teamfour.forbadsystem.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Data
 @AllArgsConstructor
@@ -22,6 +20,8 @@ public class Reply {
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "feedback_id")
+    @EqualsAndHashCode.Exclude // không sử dụng trường này trong equals và hashcode
+    @ToString.Exclude // Khoonhg sử dụng trong toString()
     @JsonIgnore
     private Feedback feedback;
 }

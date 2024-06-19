@@ -1,4 +1,4 @@
-package com.swp391.teamfour.forbadsystem.dto;
+package com.swp391.teamfour.forbadsystem.dto.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

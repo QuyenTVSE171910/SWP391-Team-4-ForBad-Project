@@ -1,16 +1,13 @@
 package com.swp391.teamfour.forbadsystem.service.serviceimp;
 
-import com.swp391.teamfour.forbadsystem.dto.FeedbackRequest;
-import com.swp391.teamfour.forbadsystem.dto.ReplyRequest;
+import com.swp391.teamfour.forbadsystem.dto.request.FeedbackRequest;
 import com.swp391.teamfour.forbadsystem.model.Court;
 import com.swp391.teamfour.forbadsystem.model.Feedback;
-import com.swp391.teamfour.forbadsystem.model.Reply;
 import com.swp391.teamfour.forbadsystem.model.Yard;
 import com.swp391.teamfour.forbadsystem.repository.CourtRepository;
 import com.swp391.teamfour.forbadsystem.repository.FeedbackRepository;
 import com.swp391.teamfour.forbadsystem.repository.YardRepository;
 import com.swp391.teamfour.forbadsystem.service.FeedbackService;
-import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -35,6 +32,8 @@ public class FeedbackServiceImp implements FeedbackService {
             Yard yard = yardRepository.findByYardId(yardId);
 
             if (yard == null) throw new RuntimeException("Không tồn tại sân này trong hệ thống.");
+
+            if (yard.getFeedbacks().isEmpty()) throw new RuntimeException("Danh sách feedback trống.");
 
             return yard.getFeedbacks();
         } catch (Exception ex) {

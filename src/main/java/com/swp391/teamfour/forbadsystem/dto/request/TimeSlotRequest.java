@@ -1,6 +1,9 @@
-package com.swp391.teamfour.forbadsystem.dto;
+package com.swp391.teamfour.forbadsystem.dto.request;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -14,6 +17,7 @@ public class TimeSlotRequest {
 
     private String slotId;
 
+    @NotBlank(message = "Name must not be empty.")
     private String slotName;
 
     @JsonFormat(pattern = ("HH:mm"))
@@ -22,9 +26,9 @@ public class TimeSlotRequest {
     @JsonFormat(pattern = ("HH:mm"))
     private LocalTime endTime;
 
-    private float price;
+    @NotNull(message = "Price per hour cannot be null")
+    @Positive(message = "Price per hour must be greater than zero")
+    private float pricePerHour;
 
     private String userId;
-
-    private String yardId;
 }

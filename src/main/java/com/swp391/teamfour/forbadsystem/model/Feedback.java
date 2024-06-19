@@ -2,9 +2,7 @@ package com.swp391.teamfour.forbadsystem.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.List;
 import java.util.Set;
@@ -29,10 +27,14 @@ public class Feedback {
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "yard_id")
+    @EqualsAndHashCode.Exclude // không sử dụng trường này trong equals và hashcode
+    @ToString.Exclude // Khoonhg sử dụng trong toString()
     @JsonIgnore
     private Yard yard;
 
     @OneToMany(mappedBy = "feedback", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+    @EqualsAndHashCode.Exclude // không sử dụng trường này trong equals và hashcode
+    @ToString.Exclude // Khoonhg sử dụng trong toString()
     @JsonIgnore
     private List<Reply> replies;
 

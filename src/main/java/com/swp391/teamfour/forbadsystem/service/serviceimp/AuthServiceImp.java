@@ -1,13 +1,17 @@
 package com.swp391.teamfour.forbadsystem.service.serviceimp;
 
-import com.swp391.teamfour.forbadsystem.dto.*;
+import com.swp391.teamfour.forbadsystem.dto.request.RoleSelectionRequest;
+import com.swp391.teamfour.forbadsystem.dto.request.SigninRequest;
+import com.swp391.teamfour.forbadsystem.dto.request.SignupRequest;
+import com.swp391.teamfour.forbadsystem.dto.response.JwtResponse;
+import com.swp391.teamfour.forbadsystem.dto.response.UserInfor;
 import com.swp391.teamfour.forbadsystem.jwt.JwtTokenProvider;
 import com.swp391.teamfour.forbadsystem.model.Role;
 import com.swp391.teamfour.forbadsystem.model.User;
 import com.swp391.teamfour.forbadsystem.repository.RoleRepository;
 import com.swp391.teamfour.forbadsystem.repository.UserRepository;
 import com.swp391.teamfour.forbadsystem.service.AuthService;
-import com.swp391.teamfour.forbadsystem.service.IdGenerator;
+import com.swp391.teamfour.forbadsystem.utils.IdGenerator;
 import com.swp391.teamfour.forbadsystem.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -69,63 +73,41 @@ public class AuthServiceImp implements AuthService {
 
 
     @Override
-    public UserInfor authenticateUser(SigninRequest signinRequest) {
+    public JwtResponse authenticateUser(SigninRequest signinRequest) {
         try {
-            UserInfor userInfor = userService.getUserInfor(signinRequest.getEmailOrPhoneNumber());
-
-            String loginIdentifier = userInfor.getEmail().equals(signinRequest.getEmailOrPhoneNumber())
-                    ? userInfor.getEmail()
-                    : userInfor.getPhoneNumber();
+            if (!userRepository.existsByEmail(signinRequest.getEmail()))
+                throw new BadCredentialsException("Email not exist !");
 
             Authentication authentication = authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(loginIdentifier, signinRequest.getPassword()));
+                    new UsernamePasswordAuthenticationToken(signinRequest.getEmail(), signinRequest.getPassword()));
+
             SecurityContextHolder.getContext().setAuthentication(authentication);
             CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
 
-            return new UserInfor(userDetails.getUserId(), userDetails.getEmail(), userDetails.getPhoneNumber(), userDetails.getFullName(),
-                    userDetails.getProfileAvatar(), userDetails.getRole().toString(), userDetails.getManagerId());
+            return new JwtResponse(userDetails.getUserId(), userDetails.getFullName(), userDetails.getProfileAvatar(), userDetails.getRole().toString(), jwtTokenProvider.generateJwtToken(userDetails), expirationTime);
         } catch (BadCredentialsException ex) {
             throw new BadCredentialsException("Error: Invalid username or password.");
         }
     }
 
     @Override
-    public JwtResponse getJwtToken(RoleSelectionRequest roleSelectionRequest) {
-        try {
-            User existingUser = userRepository.findById(roleSelectionRequest.getUserId())
-                    .orElseThrow(() -> new RuntimeException("Error: User not found."));
-
-            if (roleSelectionRequest.getRole() != null) {
-                Role role = roleRepository.findByRoleName(roleSelectionRequest.getRole())
-                        .orElseThrow(() -> new RuntimeException("Error: Role not found."));
-                existingUser.setRole(role);
-            }
-
-            userRepository.save(existingUser);
-
-            CustomUserDetails userDetails = CustomUserDetails.build(existingUser);
-
-            return new JwtResponse(jwtTokenProvider.generateJwtToken(userDetails), expirationTime);
-        } catch (RuntimeException ex) {
-            throw new RuntimeException(ex.getMessage());
-        }
-    }
-
-    @Override
     public void registerUser(SignupRequest signUpRequest) {
         try {
+
             User user = new User();
             user.setUserId(idGenerator.generateCourtId("U"));
             user.setEmail(signUpRequest.getEmail());
-            user.setPhoneNumber(signUpRequest.getPhoneNumber());
             user.setPasswordHash(encoder.encode(signUpRequest.getPassword()));
             user.setFullName(signUpRequest.getFullName());
 
-            if (signUpRequest.getProfileAvatar() != null) {
-                user.setProfileAvatar(signUpRequest.getProfileAvatar());
-            }
+            user.setProfileAvatar("https://firebasestorage.googleapis.com/v0/b/forbad-43f1e.appspot.com/o/" +
+                    "anonymous_person.jpg?alt=media&token=a5bb8c3c-bfc3-4fd4-912e-30b6fbd46391");
 
-            user.setProfileAvatar(signUpRequest.getProfileAvatar());
+            if (signUpRequest.getRole() != null) {
+                Role role = roleRepository.findByRoleName(signUpRequest.getRole())
+                        .orElseThrow(() -> new RuntimeException("Error: Role not found."));
+                user.setRole(role);
+            }
 
             if (signUpRequest.getManagerId() != null) {
                 User manager = userRepository.findById(signUpRequest.getManagerId())
@@ -152,8 +134,9 @@ public class AuthServiceImp implements AuthService {
     }
 
     @Override
-    public UserInfor handleGoogleCallBack(String code) {
+    public JwtResponse handleGoogleCallBack(Map<String, String> codeJson) {
         try {
+            String code = codeJson.get("code");
             // Gửi yêu cầu lên Google để lấy access token
             Map<String, String> accessTokenResponse = restTemplate.postForObject(accessTokenUrl, buildAccessTokenRequest(code), Map.class);
 
@@ -165,7 +148,7 @@ public class AuthServiceImp implements AuthService {
             if (userInfo.get("email") != null) {
                 if (!userRepository.existsByEmail(userInfo.get("email"))) {
                     user.setEmail(userInfo.get("email"));
-                    user.setFullName(userInfo.get("family_name") + " " +  userInfo.get("given_name"));
+                    user.setFullName(userInfo.get("family_name") + " " + userInfo.get("given_name"));
                     user.setPasswordHash(encoder.encode(String.valueOf(new Random())));
                     user.setProfileAvatar(userInfo.get("picture"));
                     userRepository.save(user);
@@ -181,8 +164,7 @@ public class AuthServiceImp implements AuthService {
 
             CustomUserDetails userDetails = CustomUserDetails.build(user);
 
-            return new UserInfor(userDetails.getUserId(), userDetails.getEmail(), userDetails.getPhoneNumber(), userDetails.getFullName(),
-                    userDetails.getProfileAvatar(), userDetails.getRole().toString(), userDetails.getManagerId());
+            return new JwtResponse(userDetails.getUserId(), userDetails.getFullName(), userDetails.getProfileAvatar(), userDetails.getRole().toString(), jwtTokenProvider.generateJwtToken(userDetails), expirationTime);
         } catch (Exception ex) {
             throw new RuntimeException("Error: Error occured while processing.");
         }
@@ -199,5 +181,22 @@ public class AuthServiceImp implements AuthService {
                 "grant_type", "authorization_code"
         );
         return requestBody;
+    }
+
+    @Override
+    public UserInfor updateRole(RoleSelectionRequest roleSelectionRequest) {
+        try {
+            User user = userRepository.findById(roleSelectionRequest.getUserId())
+                    .orElseThrow(() -> new RuntimeException("Người dùng không tồn tại trong hệ thống."));
+
+            Role role = roleRepository.findByRoleName(roleSelectionRequest.getRole())
+                    .orElseThrow(() -> new RuntimeException("Role không tồn tại."));
+
+            user.setRole(role);
+            userRepository.save(user);
+            return UserInfor.build(CustomUserDetails.build(user));
+        } catch (Exception ex) {
+            throw ex;
+        }
     }
 }

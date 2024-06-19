@@ -1,25 +1,19 @@
 package com.swp391.teamfour.forbadsystem.service.serviceimp;
 
-import com.swp391.teamfour.forbadsystem.dto.UserInfor;
-import com.swp391.teamfour.forbadsystem.model.PasswordResetToken;
+import com.swp391.teamfour.forbadsystem.dto.response.UserInfor;
 import com.swp391.teamfour.forbadsystem.model.User;
-import com.swp391.teamfour.forbadsystem.repository.PasswordResetTokenRepository;
 import com.swp391.teamfour.forbadsystem.repository.UserRepository;
-import com.swp391.teamfour.forbadsystem.service.EmailService;
 import com.swp391.teamfour.forbadsystem.service.UserService;
-import com.swp391.teamfour.forbadsystem.service.serviceimp.CustomUserDetails;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
-import java.util.UUID;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class UserServiceImp implements UserService {
@@ -27,14 +21,15 @@ public class UserServiceImp implements UserService {
     @Autowired
     private UserRepository userRepository;
 
-    @Override
-    public boolean existsByEmail(String email) {
-        return userRepository.existsByEmail(email);
+    private User getCurrentUser() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+        return userRepository.getReferenceById(userDetails.getUserId());
     }
 
     @Override
-    public boolean existsByPhoneNumber(String phoneNumber) {
-        return userRepository.existsByPhoneNumber(phoneNumber);
+    public boolean existsByEmail(String email) {
+        return userRepository.existsByEmail(email);
     }
 
     @Override
@@ -43,13 +38,12 @@ public class UserServiceImp implements UserService {
             User existingUser = userRepository.findById(user.getUserId()).orElseThrow(() -> new RuntimeException("Error: User not found."));
 
             existingUser.setEmail(user.getEmail());
-            existingUser.setPhoneNumber(user.getPhoneNumber());
             existingUser.setFullName(user.getFullName());
             existingUser.setProfileAvatar(user.getProfileAvatar());
             existingUser.setRole(user.getRole());
 
             userRepository.save(existingUser);
-            return new UserInfor(existingUser.getUserId(), existingUser.getEmail(), existingUser.getPhoneNumber(), existingUser.getFullName(), existingUser.getProfileAvatar(),
+            return new UserInfor(existingUser.getUserId(), existingUser.getEmail(), existingUser.getFullName(), existingUser.getProfileAvatar(),
                     existingUser.getRole().toString(), existingUser.getManager().getUserId());
         } catch (Exception ex) {
             throw ex;
@@ -66,33 +60,17 @@ public class UserServiceImp implements UserService {
     @Override
     public UserDetails loadUserByUsername(String emailOrPhoneNumber) throws UsernameNotFoundException {
         User user = userRepository.findByEmail(emailOrPhoneNumber)
-                .orElseGet(() -> userRepository.findByPhoneNumber(emailOrPhoneNumber)
-                        .orElseThrow(() -> new UsernameNotFoundException("User Not Found with email or phone number: " + emailOrPhoneNumber)));
+                        .orElseThrow(() -> new UsernameNotFoundException("User Not Found with email or phone number: " + emailOrPhoneNumber));
         return CustomUserDetails.build(user);
-    }
-
-    @Override
-    public UserInfor getUserInfor(String emailOrPhoneNumber) {
-        try {
-            User user = userRepository.findByEmail(emailOrPhoneNumber)
-                    .orElseGet(() -> userRepository.findByPhoneNumber(emailOrPhoneNumber)
-                            .orElseThrow(() -> new UsernameNotFoundException("User Not Found with email or phone number: " + emailOrPhoneNumber)));
-            CustomUserDetails userDetails = CustomUserDetails.build(user);
-
-            return UserInfor.build(userDetails);
-        } catch (Exception ex) {
-            throw ex;
-        }
     }
 
     @Override
     public UserInfor getUserInfor() {
         try {
-            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-            CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
-            UserInfor userInfor = new UserInfor(userDetails.getUserId(), userDetails.getEmail(), userDetails.getPhoneNumber(),
-                    userDetails.getFullName(), userDetails.getProfileAvatar(),
-                    userDetails.getRole().toString(), userDetails.getManagerId());
+            User currentUser = getCurrentUser();
+            UserInfor userInfor = new UserInfor(currentUser.getUserId(), currentUser.getEmail(),
+                    currentUser.getFullName(), currentUser.getProfileAvatar(),
+                    currentUser.getRole().toString(), currentUser.getManager().getUserId());
             return userInfor;
         } catch (Exception ex) {
             throw new RuntimeException("Có lỗi xảy ra. Vui lòng thử lại.");
@@ -109,5 +87,22 @@ public class UserServiceImp implements UserService {
             return true;
         }
         return false;
+    }
+
+    @Override
+    public List<UserInfor> getAllStaff() {
+        try {
+            User owner = getCurrentUser();
+            List<User> staffs = userRepository.getAllByManager(owner);
+
+            if (!staffs.isEmpty()) {
+                return staffs.stream()
+                            .map(staff -> UserInfor.build(CustomUserDetails.build(staff))).collect(Collectors.toList());
+            } else {
+                throw new RuntimeException("Danh sách nhân viên trống.");
+            }
+        } catch (Exception ex) {
+            throw ex;
+        }
     }
 }

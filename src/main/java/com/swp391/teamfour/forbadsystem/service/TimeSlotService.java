@@ -1,19 +1,22 @@
 package com.swp391.teamfour.forbadsystem.service;
 
-import com.swp391.teamfour.forbadsystem.dto.TimeSlotRequest;
+import com.swp391.teamfour.forbadsystem.dto.request.TimeSlotRequest;
 import com.swp391.teamfour.forbadsystem.model.TimeSlot;
+import com.swp391.teamfour.forbadsystem.model.Yard;
 
 import java.util.List;
 
 public interface TimeSlotService {
 
-    public List<TimeSlot> findAllSlotByUserId(String userId);
+    List<TimeSlot> findAllSlotByUserId();
 
-    public TimeSlot createSlot(TimeSlotRequest timeSlotRequest);
+    TimeSlot createSlot(TimeSlotRequest timeSlotRequest);
 
-    public TimeSlot updateSlot(TimeSlotRequest timeSlotRequest);
+    TimeSlot updateSlot(TimeSlotRequest timeSlotRequest);
 
-    public TimeSlot findSlotById(String slotId);
+    TimeSlot findSlotById(String slotId);
 
-    public void deteleSlotById(String slotId);
+    void deteleSlotById(String slotId);
+
+
 }

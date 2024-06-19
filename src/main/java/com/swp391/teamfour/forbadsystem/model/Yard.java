@@ -2,9 +2,8 @@ package com.swp391.teamfour.forbadsystem.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
+
 import java.util.List;
 import java.util.Collection;
 
@@ -24,17 +23,24 @@ public class Yard {
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "court_id", nullable = false)
+    @EqualsAndHashCode.Exclude // không sử dụng trường này trong equals và hashcode
+    @ToString.Exclude // Khoonhg sử dụng trong toString()
     @JsonIgnore
     private Court court;
 
 
     @OneToMany(mappedBy = "yard", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+    @EqualsAndHashCode.Exclude // không sử dụng trường này trong equals và hashcode
+    @ToString.Exclude // Khoonhg sử dụng trong toString()
     @JsonIgnore
     private List<Feedback> feedbacks;
 
     @ManyToMany
     @JoinTable(name = "yard_schedule", joinColumns = @JoinColumn(name = "yard_id"),
             inverseJoinColumns = @JoinColumn(name = "slot_id"))
+    @EqualsAndHashCode.Exclude // không sử dụng trường này trong equals và hashcode
+    @ToString.Exclude // Khoonhg sử dụng trong toString()
+    @JsonIgnore
     private Collection<TimeSlot> timeSlots;
 
     public Yard(String yardName) {

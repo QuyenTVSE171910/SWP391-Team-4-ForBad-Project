@@ -1,4 +1,4 @@
-package com.swp391.teamfour.forbadsystem.dto;
+package com.swp391.teamfour.forbadsystem.dto.request;
 
 import com.swp391.teamfour.forbadsystem.model.Feedback;
 import lombok.AllArgsConstructor;

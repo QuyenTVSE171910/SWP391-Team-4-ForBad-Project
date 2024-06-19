@@ -2,10 +2,10 @@ package com.swp391.teamfour.forbadsystem.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
+import java.sql.Time;
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
@@ -13,8 +13,7 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "user_account", uniqueConstraints = {@UniqueConstraint(columnNames = "email"),
-                                           @UniqueConstraint(columnNames = "phone_number")})
+@Table(name = "user_account", uniqueConstraints = {@UniqueConstraint(columnNames = "email")})
 public class User {
 
     @Id()
@@ -23,9 +22,6 @@ public class User {
 
     @Column(length = 100, nullable = false)
     private String email;
-
-    @Column(length = 13, name = "phone_number")
-    private String phoneNumber;
 
     @Column(length = 120, name = "password_hash", nullable = false)
     private String passwordHash;
@@ -38,13 +34,42 @@ public class User {
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "role_id")
+    @EqualsAndHashCode.Exclude
+    @ToString.Exclude
     private Role role;
 
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "manager_id", referencedColumnName = "user_id")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "manager_id")
+    @EqualsAndHashCode.Exclude
+    @ToString.Exclude
+    @JsonIgnore
     private User manager;
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+    @OneToMany(mappedBy = "manager", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+    @EqualsAndHashCode.Exclude
+    @ToString.Exclude
     @JsonIgnore
-    private List<Court> courts;
+    private Collection<User> staffs;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+    @EqualsAndHashCode.Exclude
+    @ToString.Exclude
+    @JsonIgnore
+    private Collection<Court> courts;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+    @EqualsAndHashCode.Exclude
+    @ToString.Exclude
+    @JsonIgnore
+    private Collection<TimeSlot> timeSlots;
+
+    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @EqualsAndHashCode.Exclude
+    @ToString.Exclude
+    @JoinTable(name = "staff_workplace",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "court_id")
+    )
+    @JsonIgnore
+    private Collection<Court> workplaces;
 }

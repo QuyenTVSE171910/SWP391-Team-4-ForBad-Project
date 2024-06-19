@@ -1,26 +1,26 @@
 package com.swp391.teamfour.forbadsystem.service;
 
 
-import com.swp391.teamfour.forbadsystem.dto.*;
-import com.swp391.teamfour.forbadsystem.model.User;
-import jakarta.servlet.http.HttpServletResponse;
-import org.springframework.stereotype.Service;
+import com.swp391.teamfour.forbadsystem.dto.request.RoleSelectionRequest;
+import com.swp391.teamfour.forbadsystem.dto.request.SigninRequest;
+import com.swp391.teamfour.forbadsystem.dto.request.SignupRequest;
+import com.swp391.teamfour.forbadsystem.dto.response.JwtResponse;
+import com.swp391.teamfour.forbadsystem.dto.response.UserInfor;
 
 import java.util.Map;
 
 
 public interface AuthService {
-    UserInfor authenticateUser(SigninRequest signinRequest);
+    JwtResponse authenticateUser(SigninRequest signinRequest);
 
     void registerUser(SignupRequest signUpRequest);
 
     String getGoogleAuthUrl();
 
-    UserInfor handleGoogleCallBack(String code);
+    JwtResponse handleGoogleCallBack(Map<String, String> codeJson);
 
     Map<String, String> buildAccessTokenRequest(String code);
 
-    JwtResponse getJwtToken(RoleSelectionRequest roleSelectionRequest);
-
+    UserInfor updateRole(RoleSelectionRequest roleSelectionRequest);
 
 }

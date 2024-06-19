@@ -1,6 +1,7 @@
 package com.swp391.teamfour.forbadsystem.controller;
 
-import com.swp391.teamfour.forbadsystem.dto.YardRequest;
+import com.swp391.teamfour.forbadsystem.dto.request.YardRequest;
+import com.swp391.teamfour.forbadsystem.dto.response.MessageResponse;
 import com.swp391.teamfour.forbadsystem.model.Yard;
 import com.swp391.teamfour.forbadsystem.service.YardService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -69,10 +70,16 @@ public class YardController {
         return ResponseEntity.ok().body("Đã xóa thành công sân");
     }
 
-    @PostMapping("/{yardId}/timeslot/{timeSlotId}")
+    @PostMapping("/{yardId}/timeSlot/{timeSlotId}")
     @PreAuthorize("hasAnyAuthority('manager')")
     public ResponseEntity<?> addTimeSlotToYard(@PathVariable String yardId, @PathVariable String timeSlotId) {
         yardService.addTimeSlotToYard(yardId, timeSlotId);
-        return ResponseEntity.ok().body("Đã thêm slot " + timeSlotId + " vào sân " + yardId + " thành công.");
+        return ResponseEntity.ok().body(new MessageResponse("Đã thêm slot " + timeSlotId + " vào sân " + yardId + " thành công."));
+    }
+
+    @GetMapping("/getAllByYardId/{yardId}")
+    @PreAuthorize("hasAnyAuthority('manager')")
+    public ResponseEntity<?> getAllByYardId(@PathVariable String yardId) {
+        return ResponseEntity.ok(yardService.getAllByYardId(yardId));
     }
 }

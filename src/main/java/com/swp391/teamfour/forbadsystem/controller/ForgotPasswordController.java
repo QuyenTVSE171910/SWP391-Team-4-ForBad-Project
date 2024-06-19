@@ -1,7 +1,7 @@
 package com.swp391.teamfour.forbadsystem.controller;
 
-import com.swp391.teamfour.forbadsystem.dto.MessageResponse;
-import com.swp391.teamfour.forbadsystem.dto.ResetPasswordRequest;
+import com.swp391.teamfour.forbadsystem.dto.response.MessageResponse;
+import com.swp391.teamfour.forbadsystem.dto.request.ResetPasswordRequest;
 import com.swp391.teamfour.forbadsystem.service.ForgotPasswordService;
 import com.swp391.teamfour.forbadsystem.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;

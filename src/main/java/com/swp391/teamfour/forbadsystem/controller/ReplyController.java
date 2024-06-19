@@ -1,6 +1,6 @@
 package com.swp391.teamfour.forbadsystem.controller;
 
-import com.swp391.teamfour.forbadsystem.dto.ReplyRequest;
+import com.swp391.teamfour.forbadsystem.dto.request.ReplyRequest;
 import com.swp391.teamfour.forbadsystem.model.Reply;
 import com.swp391.teamfour.forbadsystem.service.ReplyService;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -1,12 +1,15 @@
 package com.swp391.teamfour.forbadsystem.controller;
 
-import com.swp391.teamfour.forbadsystem.dto.TimeSlotRequest;
+import com.swp391.teamfour.forbadsystem.dto.request.TimeSlotRequest;
+import com.swp391.teamfour.forbadsystem.exception.AuthenticationExceptionHandler;
 import com.swp391.teamfour.forbadsystem.model.TimeSlot;
 import com.swp391.teamfour.forbadsystem.service.TimeSlotService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -23,52 +26,42 @@ public class TimeSlotController {
         this.timeSlotService = timeSlotService;
     }
 
-    @GetMapping("/findAllSlot/{ownerId}")
+    @GetMapping("/findAllSlot")
     @PreAuthorize("hasAnyAuthority('manager')")
-    public ResponseEntity<?> findAllSlotByUser(@PathVariable String ownerId){
-        List<TimeSlot> timeSlotList = timeSlotService.findAllSlotByUserId(ownerId);
-        if (timeSlotList == null){
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Không thể tìm thấy tất cả các slot");
-        }
-        return ResponseEntity.ok(timeSlotList);
+    public ResponseEntity<?> findAllSlotByUser(){
+        return ResponseEntity.ok(timeSlotService.findAllSlotByUserId());
     }
 
     @PostMapping("/createSlot")
     @PreAuthorize("hasAnyAuthority('manager')")
-    public ResponseEntity<?> createSlot(@RequestBody TimeSlotRequest timeSlotRequest) {
-        TimeSlot createSlot = timeSlotService.createSlot(timeSlotRequest);
-        if (createSlot == null) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(" Không Thể Tạo Slot");
+    public ResponseEntity<?> createSlot(@Valid @RequestBody TimeSlotRequest timeSlotRequest, BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            return ResponseEntity.badRequest().body(AuthenticationExceptionHandler.getValidationErrors(bindingResult));
         }
-        return ResponseEntity.ok(createSlot);
+        return ResponseEntity.ok(timeSlotService.createSlot(timeSlotRequest));
     }
 
     @PutMapping("/updateSlot")
     @PreAuthorize("hasAnyAuthority('manager')")
-    public ResponseEntity<?> updateSlot(@RequestBody TimeSlotRequest timeSlotRequest) {
+    public ResponseEntity<?> updateSlot(@Valid @RequestBody TimeSlotRequest timeSlotRequest, BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            return ResponseEntity.badRequest().body(AuthenticationExceptionHandler.getValidationErrors(bindingResult));
+        }
         return ResponseEntity.ok(timeSlotService.updateSlot(timeSlotRequest));
     }
 
-    @GetMapping("/findSlot")
+    @GetMapping("/findSlot/{slotId}")
     @PreAuthorize("hasAnyAuthority('manager')")
-    public ResponseEntity<?> getSlotById(@RequestBody Map<String, String> slotIdJSON) {
-        String slotId = slotIdJSON.get("slotId");
-        TimeSlot timeSlot = timeSlotService.findSlotById(slotId);
-        if (timeSlot == null) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Slot không tồn tại");
-        }
-        return ResponseEntity.ok().body("Tìm Thấy slot " + timeSlot.getSlotId());
+    public ResponseEntity<?> getSlotById(@PathVariable String slotId) {
+        return ResponseEntity.ok().body(timeSlotService.findSlotById(slotId));
     }
 
-    @DeleteMapping("/deleteSlot")
+    @DeleteMapping("/deleteSlot/{slotId}")
     @PreAuthorize("hasAnyAuthority('manager')")
-    public ResponseEntity<?> deleteSlot(@RequestBody Map<String, String> slotIdJSON) {
-        String slotId = slotIdJSON.get("slotId");
-        TimeSlot timeSlot = timeSlotService.findSlotById(slotId);
-        if (timeSlot == null) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Slot không tồn tại");
-        }
-        timeSlotService.deteleSlotById(timeSlot.getSlotId());
+    public ResponseEntity<?> deleteSlot(@PathVariable String slotId) {
+        timeSlotService.deteleSlotById(slotId);
         return ResponseEntity.ok().body("Đã xóa thành công slot!!!");
     }
+
+
 }

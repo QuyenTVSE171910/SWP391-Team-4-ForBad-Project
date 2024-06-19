@@ -2,9 +2,7 @@ package com.swp391.teamfour.forbadsystem.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.LocalTime;
 import java.util.Collection;
@@ -34,16 +32,15 @@ public class TimeSlot {
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id", nullable = false)
+    @EqualsAndHashCode.Exclude
+    @ToString.Exclude
     @JsonIgnore
     private User user;
 
     @ManyToMany(mappedBy = "timeSlots")
+    @EqualsAndHashCode.Exclude
+    @ToString.Exclude
+    @JsonIgnore
     private Collection<Yard> yards;
 
-    public TimeSlot(String slotName, LocalTime startTime, LocalTime endTime, float price) {
-        this.slotName = slotName;
-        this.startTime = startTime;
-        this.endTime = endTime;
-        this.price = price;
-    }
 }

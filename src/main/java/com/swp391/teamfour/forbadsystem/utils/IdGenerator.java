@@ -1,4 +1,4 @@
-package com.swp391.teamfour.forbadsystem.service;
+package com.swp391.teamfour.forbadsystem.utils;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;

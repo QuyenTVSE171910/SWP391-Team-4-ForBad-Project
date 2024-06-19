@@ -1,4 +1,4 @@
-package com.swp391.teamfour.forbadsystem.dto;
+package com.swp391.teamfour.forbadsystem.dto.request;
 
 import com.swp391.teamfour.forbadsystem.model.Role;
 import jakarta.validation.constraints.Email;
@@ -18,10 +18,6 @@ public class SignupRequest {
     @Email
     private String email;
 
-    @NotBlank(message = "Phone number length must be from 10 to 11 .")
-    @Size(min = 10, max = 11)
-    private String phoneNumber;
-
     @NotBlank(message = "Password length must be from 8 to 120.")
     @Size(min = 8, max = 120)
     private String password;
@@ -30,7 +26,7 @@ public class SignupRequest {
     @Size(max = 100)
     private String fullName;
 
-    private String profileAvatar;
+    private String role;
 
     private String managerId;
 }

@@ -1,6 +1,12 @@
 package com.swp391.teamfour.forbadsystem.controller;
 
-import com.swp391.teamfour.forbadsystem.dto.*;
+import com.swp391.teamfour.forbadsystem.dto.request.RoleSelectionRequest;
+import com.swp391.teamfour.forbadsystem.dto.request.SigninRequest;
+import com.swp391.teamfour.forbadsystem.dto.request.SignupRequest;
+import com.swp391.teamfour.forbadsystem.dto.response.GoogleAuthResponse;
+import com.swp391.teamfour.forbadsystem.dto.response.JwtResponse;
+import com.swp391.teamfour.forbadsystem.dto.response.MessageResponse;
+import com.swp391.teamfour.forbadsystem.dto.response.UserInfor;
 import com.swp391.teamfour.forbadsystem.exception.AuthenticationExceptionHandler;
 import com.swp391.teamfour.forbadsystem.service.AuthService;
 import com.swp391.teamfour.forbadsystem.service.UserService;
@@ -9,6 +15,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Map;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
@@ -25,10 +33,7 @@ public class AuthController {
         if (bindingResult.hasErrors()) {
             return ResponseEntity.badRequest().body(AuthenticationExceptionHandler.getValidationErrors(bindingResult));
         }
-
-        UserInfor userInfor = authService.authenticateUser(signinRequest);
-
-        return ResponseEntity.ok(userInfor);
+        return ResponseEntity.ok(authService.authenticateUser(signinRequest));
     }
 
     @PostMapping("/signup")
@@ -41,20 +46,9 @@ public class AuthController {
             return ResponseEntity.badRequest().body(new MessageResponse("Error: Email is already in use!"));
         }
 
-        if (userService.existsByPhoneNumber(signUpRequest.getPhoneNumber())) {
-            return ResponseEntity.badRequest().body(new MessageResponse("Error: Phone number is already in use!"));
-        }
-
         authService.registerUser(signUpRequest);
 
         return ResponseEntity.ok(new MessageResponse("User registered successfully!"));
-    }
-
-    @PostMapping("/authenticate")
-    public ResponseEntity<?> getJwtToken(@RequestBody RoleSelectionRequest roleSelectionRequest) {
-
-        JwtResponse jwtResponse = authService.getJwtToken(roleSelectionRequest);
-        return ResponseEntity.ok(jwtResponse);
     }
 
     @GetMapping("/google")
@@ -62,11 +56,16 @@ public class AuthController {
         return ResponseEntity.ok(new GoogleAuthResponse(authService.getGoogleAuthUrl()));
     }
 
-    @GetMapping("/google/callback")
-    public ResponseEntity<?> googleCallback(@RequestParam("code") String code) {
+    @PostMapping("/google/callback")
+    public ResponseEntity<?> googleCallback(@RequestBody Map<String, String> codeJson) {
 
-        UserInfor userInfor = authService.handleGoogleCallBack(code);
+        JwtResponse jwtResponse = authService.handleGoogleCallBack(codeJson);
 
-        return ResponseEntity.ok().body(userInfor);
+        return ResponseEntity.ok().body(jwtResponse);
+    }
+
+    @PutMapping("/update-role")
+    public ResponseEntity<?> updateRole(@RequestBody RoleSelectionRequest roleSelectionRequest) {
+        return ResponseEntity.ok().body(authService.updateRole(roleSelectionRequest));
     }
 }
