@@ -23,4 +23,6 @@ public interface CourtService {
     void addStaffToCourt(String courtId, String staffId);
 
     List<UserInfor> getAllStaffByCourtId(String courtId);
+
+    void deleteStaffFromCourt(String courtId, String staffId);
 }

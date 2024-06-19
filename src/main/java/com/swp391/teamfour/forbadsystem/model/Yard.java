@@ -23,23 +23,23 @@ public class Yard {
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "court_id", nullable = false)
-    @EqualsAndHashCode.Exclude // không sử dụng trường này trong equals và hashcode
-    @ToString.Exclude // Khoonhg sử dụng trong toString()
+    @EqualsAndHashCode.Exclude
+    @ToString.Exclude
     @JsonIgnore
     private Court court;
 
 
     @OneToMany(mappedBy = "yard", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
-    @EqualsAndHashCode.Exclude // không sử dụng trường này trong equals và hashcode
-    @ToString.Exclude // Khoonhg sử dụng trong toString()
+    @EqualsAndHashCode.Exclude
+    @ToString.Exclude
     @JsonIgnore
     private List<Feedback> feedbacks;
 
     @ManyToMany
     @JoinTable(name = "yard_schedule", joinColumns = @JoinColumn(name = "yard_id"),
             inverseJoinColumns = @JoinColumn(name = "slot_id"))
-    @EqualsAndHashCode.Exclude // không sử dụng trường này trong equals và hashcode
-    @ToString.Exclude // Khoonhg sử dụng trong toString()
+    @EqualsAndHashCode.Exclude
+    @ToString.Exclude
     @JsonIgnore
     private Collection<TimeSlot> timeSlots;
 

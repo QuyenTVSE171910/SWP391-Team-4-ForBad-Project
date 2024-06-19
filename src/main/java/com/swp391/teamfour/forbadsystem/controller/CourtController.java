@@ -62,4 +62,10 @@ public class CourtController {
     public ResponseEntity<?> getAllStaffByCourtId(@PathVariable String courtId) {
         return ResponseEntity.ok().body(courtService.getAllStaffByCourtId(courtId));
     }
+
+    @DeleteMapping("{courtId}/deleteStaffFromCourt/{staffId}")
+    public ResponseEntity<?> deleteStaffFromCourt(@PathVariable String courtId, @PathVariable String staffId) {
+        courtService.deleteStaffFromCourt(courtId, staffId);
+        return ResponseEntity.ok(new MessageResponse("Đã xóa nhân viên ra khỏi danh sách nhân viên của sân"));
+    }
 }

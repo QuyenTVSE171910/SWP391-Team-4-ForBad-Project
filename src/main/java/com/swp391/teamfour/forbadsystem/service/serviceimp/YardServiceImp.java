@@ -122,6 +122,23 @@ public class YardServiceImp implements YardService {
     }
 
     @Override
+    public void deleteSlotFromYard(String yardId, String timeSlotId) {
+        Yard yard = yardRepository.findById(yardId)
+                .orElseThrow(() -> new RuntimeException("Sân này không tồn tại trong hệ thống."));
+
+        TimeSlot slot = timeSlotRepository.findById(timeSlotId)
+                .orElseThrow(() -> new RuntimeException("Time slot này không tồn tại trong hệ thống."));
+
+        if (!yard.getTimeSlots().contains(slot)) throw new RuntimeException("Time slot này không tồn tại trong danh sách time slot của sân này.");
+
+        yard.getTimeSlots().remove(slot);
+        slot.getYards().remove(yard);
+
+        yardRepository.save(yard);
+        timeSlotRepository.save(slot);
+    }
+
+    @Override
     public List<TimeSlot> getAllByYardId(String yardId) {
         try {
             Yard existingYard = yardRepository.findById(yardId)

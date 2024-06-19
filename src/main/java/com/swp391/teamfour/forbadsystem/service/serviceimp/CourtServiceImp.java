@@ -33,6 +33,12 @@ public class CourtServiceImp implements CourtService {
     @Autowired
     private FirebaseService firebaseService;
 
+    private User getCurrentUser() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+        return userRepository.getReferenceById(userDetails.getUserId());
+    }
+
     @Override
     public List<Court> getAll() {
         try {
@@ -125,9 +131,7 @@ public class CourtServiceImp implements CourtService {
             User existingStaff = userRepository.findById(staffId)
                     .orElseThrow(() -> new RuntimeException("Nhân viên không tồn tại trong hệ thống."));
 
-            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-            CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
-            User manager = userRepository.getReferenceById(userDetails.getUserId());
+            User manager = getCurrentUser();
 
             if (!manager.getStaffs().contains(existingStaff))
                 throw new RuntimeException("Không có nhân viên này trong danh sách nhân viên của chủ sân.");
@@ -159,6 +163,27 @@ public class CourtServiceImp implements CourtService {
             } else {
                 throw new RuntimeException("Danh sách nhân viên trống.");
             }
+        } catch (Exception ex) {
+            throw ex;
+        }
+    }
+
+    @Override
+    public void deleteStaffFromCourt(String courtId, String staffId) {
+        try {
+            Court existingCourt = courtRepository.findById(courtId)
+                    .orElseThrow(() -> new RuntimeException("Cơ sở không tồn tại trong hệ thống."));
+
+            User existingStaff = userRepository.findById(staffId)
+                    .orElseThrow(() -> new RuntimeException("Nhân viên không tồn tại trong hệ thống."));
+
+            if (!existingCourt.getStaffs().contains(existingStaff)) throw new RuntimeException("Nhân viên không tồn tại trong cơ sở này.");
+
+            existingCourt.getStaffs().remove(existingStaff);
+            existingStaff.getWorkplaces().remove(existingCourt);
+
+            courtRepository.save(existingCourt);
+            userRepository.save(existingStaff);
         } catch (Exception ex) {
             throw ex;
         }

@@ -24,11 +24,11 @@ public class CourtRequest {
     private String address;
 
     @JsonFormat(pattern = "HH:mm")
-    @NotBlank(message = "Must not be empty.")
+
     private LocalTime openTime;
 
     @JsonFormat(pattern = "HH:mm")
-    @NotBlank(message = "Must not be empty.")
+
     private LocalTime closeTime;
 
     private MultipartFile image;

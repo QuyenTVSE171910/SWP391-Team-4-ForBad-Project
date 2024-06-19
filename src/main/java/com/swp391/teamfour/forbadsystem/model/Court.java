@@ -57,6 +57,13 @@ public class Court {
     @JsonIgnore
     private Collection<User> staffs;
 
+
+    @ManyToMany(mappedBy = "courts")
+    @EqualsAndHashCode.Exclude
+    @ToString.Exclude
+    @JsonIgnore
+    private Collection<Service> services;
+
     public Court(String courtName, String address, LocalTime openTime, LocalTime closeTime, int rate) {
         this.courtName = courtName;
         this.address = address;

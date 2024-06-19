@@ -82,4 +82,11 @@ public class YardController {
     public ResponseEntity<?> getAllByYardId(@PathVariable String yardId) {
         return ResponseEntity.ok(yardService.getAllByYardId(yardId));
     }
+
+    @DeleteMapping("{yardId}/deleteSlotFromYard/{timeSlotId}")
+    @PreAuthorize("hasAnyAuthority('manager')")
+    public ResponseEntity<?> deleteSlotFromYard(@PathVariable String yardId, @PathVariable String timeSlotId) {
+        yardService.deleteSlotFromYard(yardId, timeSlotId);
+        return ResponseEntity.ok(new MessageResponse("Đã xóa time slot ra khỏi danh sách time slot của sân."));
+    }
 }
