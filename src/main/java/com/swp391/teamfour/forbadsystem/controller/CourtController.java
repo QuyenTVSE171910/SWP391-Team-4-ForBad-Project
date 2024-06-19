@@ -59,13 +59,36 @@ public class CourtController {
     }
 
     @GetMapping("/all-staff/{courtId}")
+    @PreAuthorize("hasAuthority('manager')")
     public ResponseEntity<?> getAllStaffByCourtId(@PathVariable String courtId) {
         return ResponseEntity.ok().body(courtService.getAllStaffByCourtId(courtId));
     }
 
     @DeleteMapping("{courtId}/deleteStaffFromCourt/{staffId}")
+    @PreAuthorize("hasAuthority('manager')")
     public ResponseEntity<?> deleteStaffFromCourt(@PathVariable String courtId, @PathVariable String staffId) {
         courtService.deleteStaffFromCourt(courtId, staffId);
         return ResponseEntity.ok(new MessageResponse("Đã xóa nhân viên ra khỏi danh sách nhân viên của sân"));
     }
+
+    @PostMapping("{courtId}/addFacilityToCourt/{facilityId}")
+    @PreAuthorize("hasAuthority('manager')")
+    public ResponseEntity<?> addFacilityToCourt(@PathVariable String courtId, @PathVariable Long facilityId) {
+        courtService.addFacilityToCourt(courtId, facilityId);
+        return ResponseEntity.ok(new MessageResponse("Đã thêm tiện ích vào cơ sở thành công."));
+    }
+
+    @DeleteMapping("{courtId}/deleteFacilityFromCourt/{facilityId}")
+    @PreAuthorize("hasAuthority('manager')")
+    public ResponseEntity<?> deleteFacilityFromCourt(@PathVariable String courtId, @PathVariable Long facilityId) {
+        courtService.deleteFacilityFromCourt(courtId, facilityId);
+        return ResponseEntity.ok(new MessageResponse("Đã xóa tiện ích ra khỏi cơ sở."));
+    }
+
+    @GetMapping("/all/{courtId}")
+    @PreAuthorize("hasAnyAuthority('manager')")
+    public ResponseEntity<?> getAllFacilityByCourtId(@PathVariable String courtId) {
+        return ResponseEntity.ok(courtService.getAllFacilityByCourtId(courtId));
+    }
+
 }

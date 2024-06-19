@@ -1,11 +1,14 @@
 package com.swp391.teamfour.forbadsystem.service.serviceimp;
 
 import com.swp391.teamfour.forbadsystem.dto.request.CourtRequest;
+import com.swp391.teamfour.forbadsystem.dto.request.FacilityRequest;
 import com.swp391.teamfour.forbadsystem.dto.response.CourtResponse;
 import com.swp391.teamfour.forbadsystem.dto.response.UserInfor;
 import com.swp391.teamfour.forbadsystem.model.Court;
+import com.swp391.teamfour.forbadsystem.model.Facility;
 import com.swp391.teamfour.forbadsystem.model.User;
 import com.swp391.teamfour.forbadsystem.repository.CourtRepository;
+import com.swp391.teamfour.forbadsystem.repository.FacilityRepository;
 import com.swp391.teamfour.forbadsystem.repository.UserRepository;
 import com.swp391.teamfour.forbadsystem.service.CourtService;
 import com.swp391.teamfour.forbadsystem.service.FirebaseService;
@@ -23,6 +26,9 @@ import java.util.stream.Collectors;
 public class CourtServiceImp implements CourtService {
     @Autowired
     private CourtRepository courtRepository;
+
+    @Autowired
+    private FacilityRepository facilityRepository;
 
     @Autowired
     private UserRepository userRepository;
@@ -184,6 +190,62 @@ public class CourtServiceImp implements CourtService {
 
             courtRepository.save(existingCourt);
             userRepository.save(existingStaff);
+        } catch (Exception ex) {
+            throw ex;
+        }
+    }
+
+    @Override
+    public void addFacilityToCourt(String courtId, Long facilityId) {
+        try {
+            Court existingCourt = courtRepository.findById(courtId)
+                    .orElseThrow(() -> new RuntimeException("Cơ sở này không tồn tại trong hệ thống."));
+
+            Facility existingFacility = facilityRepository.findById(facilityId)
+                    .orElseThrow(() -> new RuntimeException("Tiện ích này không tồn tại trong hệ thống."));
+
+            if (existingCourt.getFacilities().contains(existingFacility)) throw new RuntimeException("Tiện ích này đã có trong cơ sở.");
+
+            existingCourt.getFacilities().add(existingFacility);
+            existingFacility.getCourts().add(existingCourt);
+
+            courtRepository.save(existingCourt);
+            facilityRepository.save(existingFacility);
+        } catch (Exception ex) {
+            throw ex;
+        }
+    }
+
+    @Override
+    public void deleteFacilityFromCourt(String courtId, Long facilityId) {
+        try {
+            Court existingCourt = courtRepository.findById(courtId)
+                    .orElseThrow(() -> new RuntimeException("Cơ sở này không tồn tại trong hệ thống."));
+
+            Facility existingFacility = facilityRepository.findById(facilityId)
+                    .orElseThrow(() -> new RuntimeException("Tiện ích này không tồn tại trong hệ thống."));
+
+            if (!existingCourt.getFacilities().contains(existingFacility)) throw new RuntimeException("Tiện ích này không có trong cơ sở.");
+
+            existingCourt.getFacilities().remove(existingFacility);
+            existingFacility.getCourts().remove(existingCourt);
+
+            courtRepository.save(existingCourt);
+            facilityRepository.save(existingFacility);
+        } catch (Exception ex) {
+            throw ex;
+        }
+    }
+
+    @Override
+    public List<FacilityRequest> getAllFacilityByCourtId(String courtId) {
+        try {
+            Court existingCourt = courtRepository.findById(courtId)
+                    .orElseThrow(() -> new RuntimeException("Cơ sở này không tồn tại trong hệ thống."));
+
+            if (existingCourt.getFacilities().isEmpty()) throw new RuntimeException("Danh sách tiện ích trống.");
+
+            return existingCourt.getFacilities().stream().map(facility -> FacilityRequest.build(facility)).collect(Collectors.toList());
         } catch (Exception ex) {
             throw ex;
         }

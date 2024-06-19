@@ -8,7 +8,6 @@ import lombok.*;
 import java.time.LocalTime;
 import java.util.Collection;
 import java.util.List;
-import java.util.Set;
 
 @Data
 @NoArgsConstructor
@@ -40,20 +39,20 @@ public class Court {
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id")
-    @EqualsAndHashCode.Exclude // không sử dụng trường này trong equals và hashcode
-    @ToString.Exclude // Khoonhg sử dụng trong toString()
+    @EqualsAndHashCode.Exclude
+    @ToString.Exclude
     @JsonIgnore
     private User user;
 
     @OneToMany(mappedBy = "court", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @EqualsAndHashCode.Exclude // không sử dụng trường này trong equals và hashcode
-    @ToString.Exclude // Khoonhg sử dụng trong toString()
+    @EqualsAndHashCode.Exclude
+    @ToString.Exclude
     @JsonIgnore
     private List<Yard> yards;
 
     @ManyToMany(mappedBy = "workplaces", fetch = FetchType.EAGER)
-    @EqualsAndHashCode.Exclude // không sử dụng trường này trong equals và hashcode
-    @ToString.Exclude // Khoonhg sử dụng trong toString()
+    @EqualsAndHashCode.Exclude
+    @ToString.Exclude
     @JsonIgnore
     private Collection<User> staffs;
 
@@ -62,7 +61,7 @@ public class Court {
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
     @JsonIgnore
-    private Collection<Service> services;
+    private Collection<Facility> facilities;
 
     public Court(String courtName, String address, LocalTime openTime, LocalTime closeTime, int rate) {
         this.courtName = courtName;

@@ -57,7 +57,7 @@ public class SecurityConfig {
                         .anyRequest().authenticated()
                 )
                 .csrf().disable()
-                .addFilterAfter(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
                 .oauth2Login();
         return http.build();
     }

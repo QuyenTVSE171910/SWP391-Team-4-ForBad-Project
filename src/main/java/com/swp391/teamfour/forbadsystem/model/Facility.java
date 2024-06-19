@@ -10,19 +10,19 @@ import java.util.Collection;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "services")
-public class Service {
+@Table(name = "facility")
+public class Facility {
 
     @Id
-    @Column(name = "service_id")
+    @Column(name = "facility_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long serviceId;
+    private Long facilityId;
 
-    @Column(name = "service_name")
-    private String serviceName;
+    @Column(name = "facility_name")
+    private String facilityName;
 
     @ManyToMany
-    @JoinTable(name = "court_service", joinColumns = @JoinColumn(name = "service_id"),
+    @JoinTable(name = "court_facility", joinColumns = @JoinColumn(name = "facility_id"),
             inverseJoinColumns = @JoinColumn(name = "court_id"))
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
