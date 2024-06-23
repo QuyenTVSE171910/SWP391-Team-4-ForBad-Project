@@ -1,6 +1,7 @@
 package com.swp391.teamfour.forbadsystem.controller;
 
 import com.swp391.teamfour.forbadsystem.dto.request.TimeSlotRequest;
+import com.swp391.teamfour.forbadsystem.dto.response.MessageResponse;
 import com.swp391.teamfour.forbadsystem.exception.AuthenticationExceptionHandler;
 import com.swp391.teamfour.forbadsystem.model.TimeSlot;
 import com.swp391.teamfour.forbadsystem.service.TimeSlotService;
@@ -60,7 +61,7 @@ public class TimeSlotController {
     @PreAuthorize("hasAnyAuthority('manager')")
     public ResponseEntity<?> deleteSlot(@PathVariable String slotId) {
         timeSlotService.deteleSlotById(slotId);
-        return ResponseEntity.ok().body("Đã xóa thành công slot!!!");
+        return ResponseEntity.ok().body(new MessageResponse("Đã xóa thành công slot!!!"));
     }
 
 

@@ -8,7 +8,7 @@ import java.util.List;
 
 public interface TimeSlotService {
 
-    List<TimeSlot> findAllSlotByUserId();
+    List<TimeSlotRequest> findAllSlotByUserId();
 
     TimeSlot createSlot(TimeSlotRequest timeSlotRequest);
 

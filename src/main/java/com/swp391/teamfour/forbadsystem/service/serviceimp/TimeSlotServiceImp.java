@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.Duration;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class TimeSlotServiceImp implements TimeSlotService {
@@ -38,13 +39,12 @@ public class TimeSlotServiceImp implements TimeSlotService {
     }
 
     @Override
-    public List<TimeSlot> findAllSlotByUserId() {
+    public List<TimeSlotRequest> findAllSlotByUserId() {
 
         User owner = getCurrentUser();
 
-        if (timeSlotRepository.findAllByUser(owner).isEmpty())
-            throw new RuntimeException("Không có timeslot nào được tạo.");
-        return timeSlotRepository.findAllByUser(owner);
+        return timeSlotRepository.findAllByUser(owner)
+                .stream().map(timeSlot -> TimeSlotRequest.build(timeSlot)).collect(Collectors.toList());
     }
 
     @Override
@@ -67,10 +67,8 @@ public class TimeSlotServiceImp implements TimeSlotService {
             timeSlot.setSlotName(timeSlotRequest.getSlotName());
             timeSlot.setStartTime(timeSlotRequest.getStartTime());
             timeSlot.setEndTime(timeSlotRequest.getEndTime());
+            timeSlot.setPrice(timeSlotRequest.getPrice());
             timeSlot.setUser(owner);
-
-            long timeSlotHour = Duration.between(timeSlot.getStartTime(), timeSlot.getEndTime()).toHours();
-            timeSlot.setPrice(timeSlotHour * timeSlotRequest.getPricePerHour());
 
             timeSlotRepository.save(timeSlot);
 
@@ -97,9 +95,7 @@ public class TimeSlotServiceImp implements TimeSlotService {
 
             existingTimeSlot.setStartTime(timeSlotRequest.getStartTime());
             existingTimeSlot.setEndTime(timeSlotRequest.getEndTime());
-
-            long timeSlotHour = Duration.between(existingTimeSlot.getStartTime(), existingTimeSlot.getEndTime()).toHours();
-            existingTimeSlot.setPrice(timeSlotHour * timeSlotRequest.getPricePerHour());
+            existingTimeSlot.setPrice(timeSlotRequest.getPrice());
 
             timeSlotRepository.save(existingTimeSlot);
             return existingTimeSlot;

@@ -14,9 +14,12 @@ public class FacilityRequest {
     private Long facilityId;
 
     @NotBlank(message = "Must not be empty.")
+    private String facilityIcon;
+
+    @NotBlank(message = "Must not be empty.")
     private String facilityName;
 
     public static FacilityRequest build(Facility facility) {
-        return new FacilityRequest(facility.getFacilityId(), facility.getFacilityName());
+        return new FacilityRequest(facility.getFacilityId(), facility.getFacilityIcon(), facility.getFacilityName());
     }
 }

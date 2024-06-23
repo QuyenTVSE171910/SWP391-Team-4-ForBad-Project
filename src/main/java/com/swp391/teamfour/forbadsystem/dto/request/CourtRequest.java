@@ -1,8 +1,6 @@
 package com.swp391.teamfour.forbadsystem.dto.request;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.swp391.teamfour.forbadsystem.model.Court;
-import jakarta.persistence.Column;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -24,16 +22,13 @@ public class CourtRequest {
     private String address;
 
     @JsonFormat(pattern = "HH:mm")
-
     private LocalTime openTime;
 
     @JsonFormat(pattern = "HH:mm")
-
     private LocalTime closeTime;
 
-    private MultipartFile image;
+    private MultipartFile imageUrl;
 
-    @NotBlank(message = "Must not be empty.")
     private String userId;
 
 }

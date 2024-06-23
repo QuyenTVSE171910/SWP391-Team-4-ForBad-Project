@@ -1,6 +1,7 @@
 package com.swp391.teamfour.forbadsystem.dto.request;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.swp391.teamfour.forbadsystem.model.TimeSlot;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
@@ -28,7 +29,12 @@ public class TimeSlotRequest {
 
     @NotNull(message = "Price per hour cannot be null")
     @Positive(message = "Price per hour must be greater than zero")
-    private float pricePerHour;
+    private float price;
 
     private String userId;
+
+    public static TimeSlotRequest build(TimeSlot timeSlot) {
+        return new TimeSlotRequest(timeSlot.getSlotId(), timeSlot.getSlotName(), timeSlot.getStartTime(),
+                timeSlot.getEndTime(), timeSlot.getPrice(), timeSlot.getUser().getUserId());
+    }
 }

@@ -23,6 +23,8 @@ public class UserController {
         return ResponseEntity.ok(userInfor);
     }
 
+
+
     @DeleteMapping("/delete")
     @PreAuthorize("hasAuthority('admin')")
     public ResponseEntity<?> deleteUser(@RequestParam String userId) {

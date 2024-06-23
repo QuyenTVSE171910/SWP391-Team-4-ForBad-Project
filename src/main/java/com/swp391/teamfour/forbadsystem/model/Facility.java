@@ -18,6 +18,9 @@ public class Facility {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long facilityId;
 
+    @Column(name = "facility_icon")
+    private String facilityIcon;
+
     @Column(name = "facility_name")
     private String facilityName;
 

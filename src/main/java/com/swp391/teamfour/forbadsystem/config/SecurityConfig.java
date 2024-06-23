@@ -54,6 +54,7 @@ public class SecurityConfig {
                 .cors().and()
                 .authorizeHttpRequests(authorize -> authorize.requestMatchers("/auth/**").permitAll()
                         .requestMatchers("/forgot-password/**").permitAll()
+                        .requestMatchers("/court/all").permitAll()
                         .anyRequest().authenticated()
                 )
                 .csrf().disable()

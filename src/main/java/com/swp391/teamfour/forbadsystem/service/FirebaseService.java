@@ -6,5 +6,5 @@ import java.io.IOException;
 
 public interface FirebaseService {
 
-    String uploadFile(MultipartFile file) throws IOException;
+    String upload(MultipartFile file) throws IOException;
 }

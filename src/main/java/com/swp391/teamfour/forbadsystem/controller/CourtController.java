@@ -6,9 +6,11 @@ import com.swp391.teamfour.forbadsystem.dto.response.MessageResponse;
 import com.swp391.teamfour.forbadsystem.service.CourtService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 
@@ -20,22 +22,19 @@ public class CourtController {
     private CourtService courtService;
 
     @GetMapping("/all")
-    @PreAuthorize("hasAuthority('admin')")
     public ResponseEntity<?> getAll() {
         return ResponseEntity.ok(courtService.getAll());
     }
 
-    @GetMapping("/all-of-owner")
+    @GetMapping("/courts-of-owner")
     @PreAuthorize("hasAuthority('manager')")
-    public ResponseEntity<?> getAllCourtOfOwner(@RequestParam String userId) {
-        return ResponseEntity.ok(courtService.getAllOfOwner(userId));
+    public ResponseEntity<?> getAllCourtOfOwner() {
+        return ResponseEntity.ok(courtService.getAllOfOwner());
     }
 
-    @PostMapping("/add")
-    @PreAuthorize("hasAnyAuthority('admin', 'manager')")
-    public ResponseEntity<?> addCourt(@Valid @RequestBody CourtRequest newCourt) throws IOException {
-        courtService.addCourt(newCourt);
-        return ResponseEntity.ok().body(new MessageResponse("Thêm cơ sở mới thành công."));
+    @PostMapping(value = "/add", consumes = "multipart/form-data")
+    public ResponseEntity<?> addCourt(@Valid CourtRequest newCourt) throws IOException {
+        return ResponseEntity.ok(courtService.addCourt(newCourt));
     }
 
     @DeleteMapping("/delete")
@@ -45,9 +44,9 @@ public class CourtController {
         return ResponseEntity.ok().body(new MessageResponse("Xóa cơ sở thành công."));
     }
 
-    @PutMapping("/update")
+    @PutMapping(value = "/update", consumes = "multipart/form-data")
     @PreAuthorize("hasAnyAuthority('admin', 'manager')")
-    public ResponseEntity<?> updateCourt(@Valid @RequestBody CourtRequest courtRequest) throws IOException {
+    public ResponseEntity<?> updateCourt(@Valid CourtRequest courtRequest) throws IOException {
         return ResponseEntity.ok(courtService.updateCourt(courtRequest));
     }
 
@@ -58,7 +57,7 @@ public class CourtController {
         return ResponseEntity.ok(new MessageResponse("Đã thêm nhân viên vào cơ sở thành công"));
     }
 
-    @GetMapping("/all-staff/{courtId}")
+    @GetMapping("/staffs-of-court/{courtId}")
     @PreAuthorize("hasAuthority('manager')")
     public ResponseEntity<?> getAllStaffByCourtId(@PathVariable String courtId) {
         return ResponseEntity.ok().body(courtService.getAllStaffByCourtId(courtId));
@@ -85,7 +84,7 @@ public class CourtController {
         return ResponseEntity.ok(new MessageResponse("Đã xóa tiện ích ra khỏi cơ sở."));
     }
 
-    @GetMapping("/all/{courtId}")
+    @GetMapping("/facilities-of-court/{courtId}")
     @PreAuthorize("hasAnyAuthority('manager')")
     public ResponseEntity<?> getAllFacilityByCourtId(@PathVariable String courtId) {
         return ResponseEntity.ok(courtService.getAllFacilityByCourtId(courtId));

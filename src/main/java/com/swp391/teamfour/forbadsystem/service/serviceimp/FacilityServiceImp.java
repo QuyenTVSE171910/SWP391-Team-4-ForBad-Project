@@ -29,6 +29,7 @@ public class FacilityServiceImp implements FacilityService {
             if (facilityRepository.existsByFacilityName(facilityRequest.getFacilityName())) throw new RuntimeException("Tiện ích này đã có trong hệ thống.");
 
             Facility facility = new Facility();
+            facility.setFacilityIcon(facilityRequest.getFacilityIcon());
             facility.setFacilityName(facilityRequest.getFacilityName());
 
             facilityRepository.save(facility);
@@ -48,6 +49,7 @@ public class FacilityServiceImp implements FacilityService {
             if (facilityRepository.existsByFacilityName(facilityRequest.getFacilityName()))
                 throw new RuntimeException("Tiện ích này đã tồn tại trong hệ thống.");
 
+            existingFacility.setFacilityIcon(facilityRequest.getFacilityIcon());
             existingFacility.setFacilityName(facilityRequest.getFacilityName());
             facilityRepository.save(existingFacility);
 

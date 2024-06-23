@@ -5,6 +5,7 @@ import com.swp391.teamfour.forbadsystem.dto.request.FacilityRequest;
 import com.swp391.teamfour.forbadsystem.dto.response.CourtResponse;
 import com.swp391.teamfour.forbadsystem.dto.response.UserInfor;
 import com.swp391.teamfour.forbadsystem.model.Court;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
@@ -13,7 +14,7 @@ public interface CourtService {
 
     List<Court> getAll();
 
-    List<Court> getAllOfOwner(String userId);
+    List<Court> getAllOfOwner();
 
      CourtResponse addCourt(CourtRequest newCourt) throws IOException;
 

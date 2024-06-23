@@ -48,8 +48,6 @@ public class CourtServiceImp implements CourtService {
     @Override
     public List<Court> getAll() {
         try {
-            if (courtRepository.findAll().isEmpty()) throw new RuntimeException("Danh sách sân trống.");
-
             return courtRepository.findAll();
         } catch (Exception ex) {
             throw new RuntimeException("Có lỗi xảy ra. Vui lòng thử lại.");
@@ -57,12 +55,9 @@ public class CourtServiceImp implements CourtService {
     }
 
     @Override
-    public List<Court> getAllOfOwner(String userId) {
+    public List<Court> getAllOfOwner() {
         try {
-            User owner = userRepository.findById(userId)
-                    .orElseThrow(() -> new RuntimeException("Chủ sân không tồn tại trong hệ thống."));
-
-            if (owner.getCourts().isEmpty()) throw new RuntimeException("Danh sách sân trống.");
+            User owner = getCurrentUser();
 
             return owner.getCourts().stream().toList();
         } catch (Exception ex) {
@@ -78,15 +73,15 @@ public class CourtServiceImp implements CourtService {
 
             if (newCourt.getCourtId() == null) court.setCourtId(idGenerator.generateCourtId("C"));
 
-            if (newCourt.getImage() != null) {
-                court.setImageUrl(firebaseService.uploadFile(newCourt.getImage()));
+            if (newCourt.getImageUrl() == null || newCourt.getImageUrl().isEmpty()) {
+                court.setImageUrl("https://firebasestorage.googleapis.com/v0/b/forbad-43f1e.appspot.com/o/" +
+                        "default_court_background.jpg?alt=media&token=c79a6780-2d25-4753-8d30-6a849128edf8");
+
+            } else {
+                court.setImageUrl(firebaseService.upload(newCourt.getImageUrl()));
             }
 
-            court.setImageUrl("https://firebasestorage.googleapis.com/v0/b/forbad-43f1e.appspot.com/o/" +
-                              "default_court_background.jpg?alt=media&token=c79a6780-2d25-4753-8d30-6a849128edf8");
-
-            User owner = userRepository.findById(newCourt.getUserId())
-                    .orElseThrow(() -> new RuntimeException("Chủ sân không tồn tại trong hệ thống."));
+            User owner = getCurrentUser();
             court.setUser(owner);
 
             owner.getCourts().add(court);
@@ -101,11 +96,14 @@ public class CourtServiceImp implements CourtService {
     @Override
     public void deleteCourt(String courtId) {
         try {
-            if (courtRepository.existsById(courtId)) {
-                courtRepository.deleteById(courtId);
-            } else {
-                throw new RuntimeException("Cơ sở không tồn tại trong hệ thống.");
-            }
+            Court existingCourt = courtRepository.findById(courtId)
+                    .orElseThrow(() -> new RuntimeException("Cơ sở này không tồn tại trong hệ thống."));
+
+            existingCourt.getYards().clear();
+            existingCourt.getFacilities().clear();
+            existingCourt.getStaffs().clear();
+
+            courtRepository.delete(existingCourt);
         } catch (Exception ex) {
             throw ex;
         }
@@ -120,7 +118,9 @@ public class CourtServiceImp implements CourtService {
             existingCourt.setAddress(courtRequest.getAddress());
             existingCourt.setOpenTime(courtRequest.getOpenTime());
             existingCourt.setCloseTime(courtRequest.getCloseTime());
-            existingCourt.setImageUrl(firebaseService.uploadFile(courtRequest.getImage()));
+            if (courtRequest.getImageUrl() != null && !courtRequest.getImageUrl().isEmpty()) {
+                existingCourt.setImageUrl(firebaseService.upload(courtRequest.getImageUrl()));
+            }
             courtRepository.save(existingCourt);
             return CourtResponse.build(existingCourt);
         } catch (Exception ex) {
@@ -242,8 +242,6 @@ public class CourtServiceImp implements CourtService {
         try {
             Court existingCourt = courtRepository.findById(courtId)
                     .orElseThrow(() -> new RuntimeException("Cơ sở này không tồn tại trong hệ thống."));
-
-            if (existingCourt.getFacilities().isEmpty()) throw new RuntimeException("Danh sách tiện ích trống.");
 
             return existingCourt.getFacilities().stream().map(facility -> FacilityRequest.build(facility)).collect(Collectors.toList());
         } catch (Exception ex) {
