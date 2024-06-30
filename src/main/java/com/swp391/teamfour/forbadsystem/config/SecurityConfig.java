@@ -58,6 +58,7 @@ public class SecurityConfig {
                         .requestMatchers("/court/latest-courts").permitAll()
                         .requestMatchers("/court/facilities-of-court/**").permitAll()
                         .requestMatchers("/yard-schedule/getAllByYardId/**").permitAll()
+                        .requestMatchers("/booking-details/booked-slots/**").permitAll()
                         .requestMatchers("/swagger-ui/**").permitAll()
                         .requestMatchers("/swagger-ui.html").permitAll()
                         .requestMatchers("/v3/api-docs/**").permitAll()

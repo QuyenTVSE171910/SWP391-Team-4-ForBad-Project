@@ -12,6 +12,7 @@ public class AuthenticationPath {
                 !requestURI.startsWith("/court/latest-courts") &&
                 !requestURI.startsWith("/court/facilities-of-court/") &&
                 !requestURI.startsWith("/yard-schedule/getAllByYardId/") &&
+                !requestURI.startsWith("/booking-details/booked-slots/") &&
                 !requestURI.startsWith("/court/all");
     }
 }
