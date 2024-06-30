@@ -40,11 +40,11 @@ public class UserServiceImp implements UserService {
             existingUser.setEmail(user.getEmail());
             existingUser.setFullName(user.getFullName());
             existingUser.setProfileAvatar(user.getProfileAvatar());
-            existingUser.setRole(user.getRole());
+            existingUser.setRoles(user.getRoles());
 
             userRepository.save(existingUser);
             return new UserInfor(existingUser.getUserId(), existingUser.getEmail(), existingUser.getFullName(), existingUser.getProfileAvatar(),
-                    existingUser.getRole().toString(), existingUser.getManager().getUserId());
+                    existingUser.getRoles().stream().map(r -> r.getRoleName()).collect(Collectors.toSet()), existingUser.getManager().getUserId());
         } catch (Exception ex) {
             throw ex;
         }
@@ -68,9 +68,11 @@ public class UserServiceImp implements UserService {
     public UserInfor getUserInfor() {
         try {
             User currentUser = getCurrentUser();
+            String managerId =  (currentUser.getManager() != null ? currentUser.getManager().getUserId() : null);
+
             UserInfor userInfor = new UserInfor(currentUser.getUserId(), currentUser.getEmail(),
                     currentUser.getFullName(), currentUser.getProfileAvatar(),
-                    currentUser.getRole().toString(), currentUser.getManager().getUserId());
+                    currentUser.getRoles().stream().map(r -> r.getRoleName()).collect(Collectors.toSet()), managerId);
             return userInfor;
         } catch (Exception ex) {
             throw new RuntimeException("Có lỗi xảy ra. Vui lòng thử lại.");

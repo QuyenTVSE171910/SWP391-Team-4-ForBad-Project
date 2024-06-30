@@ -1,6 +1,7 @@
 package com.swp391.teamfour.forbadsystem.service.serviceimp;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.swp391.teamfour.forbadsystem.model.Role;
 import com.swp391.teamfour.forbadsystem.model.User;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -8,8 +9,10 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 
 @Data
 @AllArgsConstructor
@@ -21,11 +24,12 @@ public class CustomUserDetails implements UserDetails {
     private String password;
     private String fullName;
     private String profileAvatar;
-    private GrantedAuthority role;
+    private Collection<? extends GrantedAuthority> roles;
     private String managerId;
 
     public static CustomUserDetails build(User user) {
-        GrantedAuthority authority = (user.getRole() != null) ? new SimpleGrantedAuthority(user.getRole().getRoleName()) : new SimpleGrantedAuthority("temp");
+        List<GrantedAuthority> authorities = new ArrayList<>();
+        user.getRoles().stream().forEach(r -> authorities.add(new SimpleGrantedAuthority(r.getRoleName())));
         String managerId = (user.getManager() != null) ? user.getManager().getUserId() : null;
 
         return new CustomUserDetails(
@@ -34,13 +38,13 @@ public class CustomUserDetails implements UserDetails {
                 user.getPasswordHash(),
                 user.getFullName(),
                 user.getProfileAvatar(),
-                authority,
+                authorities,
                 managerId);
     }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return Collections.singleton(role);
+        return roles;
     }
 
     @Override

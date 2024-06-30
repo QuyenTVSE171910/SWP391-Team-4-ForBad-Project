@@ -17,10 +17,4 @@ public interface YardService {
     Yard findYardById(String yardId);
 
     void deleteYardById(String yardId);
-
-    void addTimeSlotToYard(String yardId, String slotId);
-
-    List<TimeSlot> getAllByYardId(String yardId);
-
-    void deleteSlotFromYard(String yardId, String timeSlotId);
 }

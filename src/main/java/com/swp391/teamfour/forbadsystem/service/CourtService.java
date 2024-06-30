@@ -16,6 +16,8 @@ public interface CourtService {
 
     List<Court> getAllOfOwner();
 
+    List<Court> getLatestCourt();
+
      CourtResponse addCourt(CourtRequest newCourt) throws IOException;
 
     void deleteCourt(String courtId);

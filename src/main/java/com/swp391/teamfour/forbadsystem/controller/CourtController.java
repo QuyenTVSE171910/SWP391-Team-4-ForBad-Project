@@ -32,6 +32,11 @@ public class CourtController {
         return ResponseEntity.ok(courtService.getAllOfOwner());
     }
 
+    @GetMapping("/latest-courts")
+    public ResponseEntity<?> getLatestCourt() {
+        return ResponseEntity.ok(courtService.getLatestCourt());
+    }
+
     @PostMapping(value = "/add", consumes = "multipart/form-data")
     public ResponseEntity<?> addCourt(@Valid CourtRequest newCourt) throws IOException {
         return ResponseEntity.ok(courtService.addCourt(newCourt));
@@ -85,7 +90,6 @@ public class CourtController {
     }
 
     @GetMapping("/facilities-of-court/{courtId}")
-    @PreAuthorize("hasAnyAuthority('manager')")
     public ResponseEntity<?> getAllFacilityByCourtId(@PathVariable String courtId) {
         return ResponseEntity.ok(courtService.getAllFacilityByCourtId(courtId));
     }

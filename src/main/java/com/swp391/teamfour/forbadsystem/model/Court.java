@@ -4,7 +4,10 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.Collection;
 import java.util.List;
@@ -14,6 +17,7 @@ import java.util.List;
 @AllArgsConstructor
 @Entity
 @Table(name="court")
+@EntityListeners(AuditingEntityListener.class)
 public class Court {
     @Id
     @Column(name = "court_id")
@@ -44,10 +48,14 @@ public class Court {
     @JsonIgnore
     private User user;
 
+    @Column(updatable = false)
+    @CreatedDate
+    @JsonFormat(pattern = "dd/MM/yyyy HH:mm")
+    private LocalDateTime beginDate;
+
     @OneToMany(mappedBy = "court", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
-    @JsonIgnore
     private List<Yard> yards;
 
     @ManyToMany(mappedBy = "workplaces", fetch = FetchType.EAGER)
@@ -55,7 +63,6 @@ public class Court {
     @ToString.Exclude
     @JsonIgnore
     private Collection<User> staffs;
-
 
     @ManyToMany(mappedBy = "courts")
     @EqualsAndHashCode.Exclude

@@ -38,7 +38,7 @@ public class YardController {
         if (yardCreate == null) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Không thể tạo sân!!!");
         }
-        return ResponseEntity.ok().body("Đã tạo thành công sân mới!!!(" + yardCreate.getYardId() + ")");
+        return ResponseEntity.ok().body(new MessageResponse("Đã tạo thành công sân mới!!!"));
     }
 
     @PutMapping("/updateyard")
@@ -68,25 +68,5 @@ public class YardController {
         }
         yardService.deleteYardById(yard.getYardId());
         return ResponseEntity.ok().body("Đã xóa thành công sân");
-    }
-
-    @PostMapping("/{yardId}/timeSlot/{timeSlotId}")
-    @PreAuthorize("hasAnyAuthority('manager')")
-    public ResponseEntity<?> addTimeSlotToYard(@PathVariable String yardId, @PathVariable String timeSlotId) {
-        yardService.addTimeSlotToYard(yardId, timeSlotId);
-        return ResponseEntity.ok().body(new MessageResponse("Đã thêm slot " + timeSlotId + " vào sân " + yardId + " thành công."));
-    }
-
-    @GetMapping("/getAllByYardId/{yardId}")
-    @PreAuthorize("hasAnyAuthority('manager')")
-    public ResponseEntity<?> getAllByYardId(@PathVariable String yardId) {
-        return ResponseEntity.ok(yardService.getAllByYardId(yardId));
-    }
-
-    @DeleteMapping("{yardId}/deleteSlotFromYard/{timeSlotId}")
-    @PreAuthorize("hasAnyAuthority('manager')")
-    public ResponseEntity<?> deleteSlotFromYard(@PathVariable String yardId, @PathVariable String timeSlotId) {
-        yardService.deleteSlotFromYard(yardId, timeSlotId);
-        return ResponseEntity.ok(new MessageResponse("Đã xóa time slot ra khỏi danh sách time slot của sân."));
     }
 }

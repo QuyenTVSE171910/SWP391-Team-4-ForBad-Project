@@ -37,10 +37,4 @@ public class TimeSlot {
     @JsonIgnore
     private User user;
 
-    @ManyToMany(mappedBy = "timeSlots")
-    @EqualsAndHashCode.Exclude
-    @ToString.Exclude
-    @JsonIgnore
-    private Collection<Yard> yards;
-
 }

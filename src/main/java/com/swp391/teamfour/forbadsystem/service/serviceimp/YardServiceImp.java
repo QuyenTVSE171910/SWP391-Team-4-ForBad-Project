@@ -4,6 +4,7 @@ import com.swp391.teamfour.forbadsystem.dto.request.YardRequest;
 import com.swp391.teamfour.forbadsystem.model.Court;
 import com.swp391.teamfour.forbadsystem.model.TimeSlot;
 import com.swp391.teamfour.forbadsystem.model.Yard;
+import com.swp391.teamfour.forbadsystem.model.YardSchedule;
 import com.swp391.teamfour.forbadsystem.repository.CourtRepository;
 import com.swp391.teamfour.forbadsystem.repository.TimeSlotRepository;
 import com.swp391.teamfour.forbadsystem.repository.YardRepository;
@@ -93,60 +94,6 @@ public class YardServiceImp implements YardService {
             } else {
                 throw new RuntimeException("Cơ sở không tồn tại trong hệ thống.");
             }
-        } catch (Exception ex) {
-            throw ex;
-        }
-    }
-
-    @Override
-    public void addTimeSlotToYard(String yardId, String slotId) {
-        try {
-            Yard yard = yardRepository.findById(yardId)
-                    .orElseThrow(() -> new RuntimeException("Sân này không tồn tại trong hệ thống."));
-
-            TimeSlot slot = timeSlotRepository.findById(slotId)
-                    .orElseThrow(() -> new RuntimeException("Time slot này không tồn tại trong hệ thống."));
-
-            if (!yard.getTimeSlots().contains(slot)) {
-                yard.getTimeSlots().add(slot);
-                slot.getYards().add(yard);
-            } else {
-                throw new RuntimeException("Slot này đã có trong sân.");
-            }
-
-            yardRepository.save(yard);
-            timeSlotRepository.save(slot);
-        } catch (Exception ex) {
-            throw ex;
-        }
-    }
-
-    @Override
-    public void deleteSlotFromYard(String yardId, String timeSlotId) {
-        Yard yard = yardRepository.findById(yardId)
-                .orElseThrow(() -> new RuntimeException("Sân này không tồn tại trong hệ thống."));
-
-        TimeSlot slot = timeSlotRepository.findById(timeSlotId)
-                .orElseThrow(() -> new RuntimeException("Time slot này không tồn tại trong hệ thống."));
-
-        if (!yard.getTimeSlots().contains(slot)) throw new RuntimeException("Time slot này không tồn tại trong danh sách time slot của sân này.");
-
-        yard.getTimeSlots().remove(slot);
-        slot.getYards().remove(yard);
-
-        yardRepository.save(yard);
-        timeSlotRepository.save(slot);
-    }
-
-    @Override
-    public List<TimeSlot> getAllByYardId(String yardId) {
-        try {
-            Yard existingYard = yardRepository.findById(yardId)
-                    .orElseThrow(() -> new RuntimeException("Sân này không có trong hệ thống."));
-
-            if (existingYard.getTimeSlots().isEmpty()) throw new RuntimeException("Sân này chưa có time slot nào.");
-
-            return existingYard.getTimeSlots().stream().toList();
         } catch (Exception ex) {
             throw ex;
         }

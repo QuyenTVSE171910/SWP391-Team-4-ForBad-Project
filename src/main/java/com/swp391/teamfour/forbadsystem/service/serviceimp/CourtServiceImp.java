@@ -66,6 +66,15 @@ public class CourtServiceImp implements CourtService {
     }
 
     @Override
+    public List<Court> getLatestCourt() {
+        try {
+            return courtRepository.findTop10ByOrderByCreatedAtDesc();
+        } catch (Exception ex) {
+            throw ex;
+        }
+    }
+
+    @Override
     public CourtResponse addCourt(CourtRequest newCourt) throws IOException {
         try {
             Court court = new Court(newCourt.getCourtName(), newCourt.getAddress(),

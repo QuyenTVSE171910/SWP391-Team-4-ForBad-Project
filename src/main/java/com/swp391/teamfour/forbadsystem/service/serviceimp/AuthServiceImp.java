@@ -24,8 +24,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.Map;
-import java.util.Random;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class AuthServiceImp implements AuthService {
@@ -84,7 +84,12 @@ public class AuthServiceImp implements AuthService {
             SecurityContextHolder.getContext().setAuthentication(authentication);
             CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
 
-            return new JwtResponse(userDetails.getUserId(), userDetails.getFullName(), userDetails.getProfileAvatar(), userDetails.getRole().toString(), jwtTokenProvider.generateJwtToken(userDetails), expirationTime);
+            Set roles = userDetails.getAuthorities().stream().map(a -> a.getAuthority()).collect(Collectors.toSet());
+
+            String jwtToken = jwtTokenProvider.generateJwtToken(userDetails);
+
+            return new JwtResponse(userDetails.getUserId(), userDetails.getFullName(), userDetails.getProfileAvatar(), userDetails.getEmail(),
+                    roles, jwtToken, expirationTime);
         } catch (BadCredentialsException ex) {
             throw new BadCredentialsException("Error: Invalid username or password.");
         }
@@ -103,11 +108,18 @@ public class AuthServiceImp implements AuthService {
             user.setProfileAvatar("https://firebasestorage.googleapis.com/v0/b/forbad-43f1e.appspot.com/o/" +
                     "anonymous_person.jpg?alt=media&token=a5bb8c3c-bfc3-4fd4-912e-30b6fbd46391");
 
+            List<Role> roles = new ArrayList<>();
+            Role role;
             if (signUpRequest.getRole() != null) {
-                Role role = roleRepository.findByRoleName(signUpRequest.getRole())
+                role = roleRepository.findByRoleName(signUpRequest.getRole())
                         .orElseThrow(() -> new RuntimeException("Error: Role not found."));
-                user.setRole(role);
+            } else {
+                role = roleRepository.findByRoleName("customer")
+                        .orElseThrow(() -> new RuntimeException("Error: Role not found."));
             }
+
+            roles.add(role);
+            user.setRoles(roles);
 
             if (signUpRequest.getManagerId() != null) {
                 User manager = userRepository.findById(signUpRequest.getManagerId())
@@ -147,24 +159,35 @@ public class AuthServiceImp implements AuthService {
 
             if (userInfo.get("email") != null) {
                 if (!userRepository.existsByEmail(userInfo.get("email"))) {
+                    user.setUserId(idGenerator.generateCourtId("U"));
                     user.setEmail(userInfo.get("email"));
                     user.setFullName(userInfo.get("family_name") + " " + userInfo.get("given_name"));
                     user.setPasswordHash(encoder.encode(String.valueOf(new Random())));
-                    user.setProfileAvatar(userInfo.get("picture"));
-                    userRepository.save(user);
+
+                    List<Role> roles = new ArrayList<>();
+                    Role role = roleRepository.findByRoleName("customer")
+                            .orElseThrow(() -> new RuntimeException("Error: Role not found."));
+                    roles.add(role);
+                    user.setRoles(roles);
+
                 } else {
                     user = userRepository.findByEmail(userInfo.get("email"))
                             .orElseThrow(() -> new RuntimeException("Error: User not found."));
-                    user.setProfileAvatar(userInfo.get("picture"));
-                    userRepository.save(user);
                 }
+                user.setProfileAvatar(userInfo.get("picture"));
+                userRepository.save(user);
             } else {
                 throw new RuntimeException("Error: Email is not provided by Google");
             }
 
             CustomUserDetails userDetails = CustomUserDetails.build(user);
 
-            return new JwtResponse(userDetails.getUserId(), userDetails.getFullName(), userDetails.getProfileAvatar(), userDetails.getRole().toString(), jwtTokenProvider.generateJwtToken(userDetails), expirationTime);
+            Set roles = userDetails.getAuthorities().stream().map(a -> a.getAuthority()).collect(Collectors.toSet());
+
+            String jwtToken = jwtTokenProvider.generateJwtToken(userDetails);
+
+            return new JwtResponse(userDetails.getUserId(), userDetails.getFullName(), userDetails.getProfileAvatar(),
+                    userDetails.getEmail(), roles, jwtToken, expirationTime);
         } catch (Exception ex) {
             throw new RuntimeException("Error: Error occured while processing.");
         }
@@ -192,7 +215,7 @@ public class AuthServiceImp implements AuthService {
             Role role = roleRepository.findByRoleName(roleSelectionRequest.getRole())
                     .orElseThrow(() -> new RuntimeException("Role không tồn tại."));
 
-            user.setRole(role);
+            user.getRoles().add(role);
             userRepository.save(user);
             return UserInfor.build(CustomUserDetails.build(user));
         } catch (Exception ex) {

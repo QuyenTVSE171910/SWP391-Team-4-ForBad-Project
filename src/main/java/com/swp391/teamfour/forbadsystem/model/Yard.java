@@ -34,16 +34,4 @@ public class Yard {
     @ToString.Exclude
     @JsonIgnore
     private List<Feedback> feedbacks;
-
-    @ManyToMany
-    @JoinTable(name = "yard_schedule", joinColumns = @JoinColumn(name = "yard_id"),
-            inverseJoinColumns = @JoinColumn(name = "slot_id"))
-    @EqualsAndHashCode.Exclude
-    @ToString.Exclude
-    @JsonIgnore
-    private Collection<TimeSlot> timeSlots;
-
-    public Yard(String yardName) {
-        this.yardName = yardName;
-    }
 }
